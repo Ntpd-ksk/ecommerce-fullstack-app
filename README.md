@@ -1,18 +1,27 @@
-# E-commerce Fullstack App
+# 🛒 E-commerce Fullstack App
 
-## Description
-This is a fullstack e-commerce web application with frontend and backend system.
+## 📌 Description
+A fullstack e-commerce web application with user and admin system.
 
-## Features
-- User authentication
-- Product management
-- Shopping cart
-- Admin dashboard
+## 🚀 Features
+- User authentication (login/register)
+- Product listing and search
+- Shopping cart system
+- Admin dashboard (manage products)
+- Image upload system
 
-## Tech Stack
+## 🛠 Tech Stack
 - Frontend: HTML, CSS, JavaScript
-- Backend: Node.js
+- Backend: Node.js / Express
 - Database: MongoDB
+- Cloud: Google Cloud
+- File Upload: UploadThing
 
-## Status
+## 📷 Screenshots
+![Home](./screenshots/home.png)
+![Home](./screenshots/shopping cart.png)
+![Admin](./screenshots/admin1.png)
+![Admin](./screenshots/admin2.png)
+
+## 📌 Status
 This project is still under development.
