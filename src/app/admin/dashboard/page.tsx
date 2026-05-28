@@ -10,8 +10,16 @@ export interface IProduct {
   id: string
   imagePath: string
   name: string
+  brand: string
+  sku: string
+  description: string
   price: string
+  discountPrice: string
   category: string
+  warranty: string
+  stock: number
+  tags: string | string[]
+  specs: any
 }
 
 const Dashboard = () => {
@@ -42,7 +50,7 @@ const Dashboard = () => {
               <th>ชื่อ</th>
               <th>ราคา</th>
               <th>รูปภาพ</th>
-              <th>แก้ไข/ลบ</th>
+              <th>ลบ</th>
             </tr>
           </thead>
           <tbody>

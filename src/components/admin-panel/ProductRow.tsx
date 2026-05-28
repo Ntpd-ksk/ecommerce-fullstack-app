@@ -44,7 +44,7 @@ const ProductRow = ({
     }
 
     return (
-        <tr className="border-b border-[#ececec]">
+        <tr className="border-b border-[#ececec] hover:bg-gray-50 cursor-pointer" onClick={onEdit}>
             <td className="py-2 text-center">
                 <div>{srNo}</div>
             </td>
@@ -63,13 +63,12 @@ const ProductRow = ({
             </td>
             <td>
                 <div className="text-2xl flex justify-center items-center gap-2 text-gray-600">
-                    <CiEdit
-                        className="cursor-pointer hover:text-black"
-                        onClick={onEdit}
-                    />
                     <RiDeleteBin5Line
                         className="text-[20px] cursor-pointer hover:text-red-600"
-                        onClick={onDelete}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete();
+                        }}
                     />
                 </div>
             </td>

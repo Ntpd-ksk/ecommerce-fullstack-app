@@ -158,8 +158,14 @@ const ProductDetail = () => {
                         </h1>
 
                         <div className="text-sm text-gray-500">
-                            แบรนด์: <span className="text-accent font-medium">{product.brand}</span> | รหัสสินค้า: {product.sku}
+                            หมวดหมู่: <span className="text-accent font-medium">{product.category}</span> | แบรนด์: <span className="text-accent font-medium">{product.brand}</span> | รหัสสินค้า: {product.sku}
                         </div>
+
+                        {product.description && (
+                            <div className="text-gray-600 text-sm mt-2 line-clamp-3">
+                                {product.description}
+                            </div>
+                        )}
 
                         <div className="flex items-center gap-4 mt-2">
                             <button
@@ -227,15 +233,6 @@ const ProductDetail = () => {
                             >
                                 ซื้อเลย
                             </button>
-                        </div>
-
-                        {/* Tags */}
-                        <div className="flex flex-wrap gap-2 mt-6">
-                            {Array.isArray(tagsArray) && tagsArray.map((tag: string) => (
-                                <span key={tag} className="bg-accent text-white text-[11px] px-3 py-1 rounded-full font-medium">
-                                    #{tag}
-                                </span>
-                            ))}
                         </div>
                     </div>
                 </div>

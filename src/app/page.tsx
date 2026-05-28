@@ -15,7 +15,7 @@ const Home = () => {
   // สร้าง state ชื่อ showCart โดยใช้ useState ซึ่งเริ่มต้นด้วยค่าเริ่มต้นเป็น false เพื่อแสดงว่าตะกร้าสินค้าไม่ถูกแสดงอยู่
   const [showCart, setShowCart] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
-  const [filterType, setFilterType] = useState("ใหม่")
+  const [filterType, setFilterType] = useState("ทั้งหมด")
 
   const scrollToProducts = () => {
     const element = document.getElementById("trending-products")

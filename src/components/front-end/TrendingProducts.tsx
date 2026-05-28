@@ -31,39 +31,29 @@ const TrendingProducts = ({ searchQuery, filterType, setFilterType }: PropsType)
             .catch((err) => console.log(err))
     }, [])
 
+    const categories = ["ทั้งหมด", ...Array.from(new Set(products.map(p => p.category).filter(Boolean)))];
+
     const filteredProducts = products.filter((product) => {
         const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
 
-        if (filterType === "ใหม่") return matchesSearch;
-        if (filterType === "ฟีเจอร์") return matchesSearch && (product.category === "feature" || product.brand === "Feature");
-        if (filterType === "สินค้าขายดี") return matchesSearch && (product.category === "bestseller" || (product.price > 30000)); // Dummy logic if no category
-
-        return matchesSearch;
+        if (filterType === "ทั้งหมด") return matchesSearch;
+        return matchesSearch && product.category === filterType;
     });
 
     return (
         <div id="trending-products" className="container mt-32">
             <div className="sm:flex justify-between items-center">
                 <h2 className="text-4xl font-medium">สินค้าที่กำลังมาแรง</h2>
-                <div className="text-gray-500 flex gap-4 text-xl mt-4 sm:mt-0">
-                    <div
-                        className={`${filterType === "ใหม่" ? "text-black underline underline-offset-8 decoration-accent" : "hover:text-black cursor-pointer"} transition-colors`}
-                        onClick={() => setFilterType("ใหม่")}
-                    >
-                        ใหม่
-                    </div>
-                    <div
-                        className={`${filterType === "ฟีเจอร์" ? "text-black underline underline-offset-8 decoration-accent" : "hover:text-black cursor-pointer"} transition-colors`}
-                        onClick={() => setFilterType("ฟีเจอร์")}
-                    >
-                        ฟีเจอร์
-                    </div>
-                    <div
-                        className={`${filterType === "สินค้าขายดี" ? "text-black underline underline-offset-8 decoration-accent" : "hover:text-black cursor-pointer"} transition-colors`}
-                        onClick={() => setFilterType("สินค้าขายดี")}
-                    >
-                        สินค้าขายดี
-                    </div>
+                <div className="text-gray-500 flex gap-4 text-xl mt-4 sm:mt-0 flex-wrap">
+                    {categories.map((cat) => (
+                        <div
+                            key={cat}
+                            className={`${filterType === (cat === "ทั้งหมด" ? "ใหม่" : cat) || filterType === cat ? "text-black underline underline-offset-8 decoration-accent" : "hover:text-black cursor-pointer"} transition-colors whitespace-nowrap`}
+                            onClick={() => setFilterType(cat)}
+                        >
+                            {cat}
+                        </div>
+                    ))}
                 </div>
             </div>
 
@@ -77,7 +67,7 @@ const TrendingProducts = ({ searchQuery, filterType, setFilterType }: PropsType)
                             title={item.name}
                             price={item.price}
                             discountPrice={item.discountPrice}
-                            category={item.brand || "สินค้าทั่วไป"}
+                            category={item.category || "สินค้าทั่วไป"}
                         />
                     ))
                 ) : (

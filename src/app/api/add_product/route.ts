@@ -4,15 +4,22 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json()
-        const { imgSrc, name, price } = body
+        const { imgSrc, name, category, price, brand, discountPrice, description, stock, warranty, specs, tags } = body
 
         const data = await prisma.product.create({
             data: {
                 imagePath: imgSrc,
                 name,
-                description: "", // กำหนดค่าว่างไว้ก่อนตาม Schema
+                category,
+                brand: brand || "",
+                sku: `SKU-${Date.now()}`,
+                description: description || "",
                 price: Number(price),
-                stock: 10, // กำหนดค่าเริ่มต้น
+                discountPrice: discountPrice ? Number(discountPrice) : null,
+                stock: Number(stock) || 10,
+                warranty: warranty || "",
+                specs: specs || {},
+                tags: tags || []
             }
         })
 

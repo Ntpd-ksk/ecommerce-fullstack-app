@@ -4,12 +4,19 @@ import { IProduct } from "@/app/admin/dashboard/page";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 const initialState: IProduct = {
-    _id: "",
-    imgSrc: "",
-    fileKey: "",
+    id: "",
+    imagePath: "",
     name: "",
+    brand: "",
+    sku: "",
+    description: "",
     price: "",
+    discountPrice: "",
     category: "",
+    warranty: "",
+    stock: 0,
+    tags: [],
+    specs: {},
 }
 
 export const productSlice = createSlice({

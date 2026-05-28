@@ -8,9 +8,9 @@ import React from 'react'
 // ประกาศ functional component ชื่อ Products ซึ่งเป็นหน้าที่แสดงฟอร์มสำหรับจัดการสินค้า
 const Products = () => {
   return (
-    <div className='h-[calc(100vh-96px)] w-full grid place-items-center overflow-y-auto'>
-        <div className='bg-white w-[300px] rounded-lg p-4'>
-        {/* เรียกใช้คอมโพเนนต์ ProductForm เพื่อแสดงฟอร์มสำหรับเพิ่มหรือแก้ไขข้อมูลสินค้า */}
+    <div className='h-[calc(100vh-96px)] w-full overflow-y-auto'>
+        <div className='bg-white max-w-3xl mx-auto rounded-lg p-8'>
+            <h2 className='text-3xl font-bold mb-6'>เพิ่มสินค้าใหม่</h2>
             <ProductForm />
         </div>
     </div>
