@@ -27,15 +27,20 @@ model Account {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String     @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?    @unique
   password      String?
-  role          String    @default("USER")
+  role          String     @default("USER")
+  phone         String?
+  birthDate     String?
+  facebook      String?
+  line          String?
   emailVerified DateTime?
-  image         String?
+  image         String?    @db.LongText
   accounts      Account[]
   orders        Order[]
+  addresses     Address[]
 }
 
 model Product {
@@ -68,4 +73,20 @@ model OrderItem {
   price     Decimal @db.Decimal(10, 2)
   order     Order   @relation(fields: [orderId], references: [id])
   product   Product @relation(fields: [productId], references: [id])
+}
+
+model Address {
+  id           String  @id @default(cuid())
+  userId       String
+  name         String
+  phone        String
+  address      String  @db.Text
+  province     String
+  district     String
+  subDistrict  String
+  postalCode   String
+  isDefault    Boolean @default(false)
+  user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }

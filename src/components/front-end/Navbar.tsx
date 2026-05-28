@@ -1,12 +1,13 @@
 // Component Navbar เป็นส่วนหนึ่งของหน้าเว็บที่แสดงเมนูและเครื่องมือต่างๆ ซึ่งมักจะประกอบด้วยโลโก้เว็บไซต์ ช่องค้นหา รายการสินค้าในตะกร้า และลิงก์เข้าสู่ระบบของผู้ใช้
 
 import { useAppSelector } from '@/redux/hook'
-import React, { Dispatch, SetStateAction, useState } from 'react'
-import { AiOutlineShoppingCart, AiOutlineUser } from 'react-icons/ai'
+import React, { Dispatch, SetStateAction, useState, useRef, useEffect } from 'react'
+import { AiOutlineShoppingCart, AiOutlineUser, AiOutlineHeart } from 'react-icons/ai'
 import { BsSearch } from 'react-icons/bs'
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import AuthModal from "./AuthModal";
+import axios from "axios";
 
 interface PropsType {
     setShowCart: Dispatch<SetStateAction<boolean>>
@@ -16,12 +17,40 @@ const Navbar = ({ setShowCart }: PropsType) => {
     const { data: session } = useSession();
     const cartCount = useAppSelector((state) => state.cartReducer.length)
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [userImage, setUserImage] = useState<string | null>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (session) {
+            axios.get("/api/user/me").then(res => {
+                setUserImage(res.data.user.image);
+            }).catch(() => {});
+        } else {
+            setUserImage(null);
+        }
+    }, [session]);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsDropdownOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const getInitials = (email: string | null | undefined) => {
+        if (!email) return "U";
+        return email.slice(0, 2).toUpperCase();
+    };
 
     const handleProfileClick = () => {
         if (!session) {
             setIsAuthModalOpen(true);
         } else {
-            signOut();
+            setIsDropdownOpen(!isDropdownOpen);
         }
     };
 
@@ -48,24 +77,24 @@ const Navbar = ({ setShowCart }: PropsType) => {
                         </div>
                     </div>
                     <div className='flex gap-4 md:gap-8 items-center'>
-                        <div className='md:flex hidden gap-3 items-center cursor-pointer' onClick={handleProfileClick}>
-                            {session ? (
-                                <div className="flex gap-3 items-center">
-                                    <div className='rounded-full border-2 border-gray-300 text-gray-500 text-[32px] w-[50px] h-[50px] grid place-items-center overflow-hidden'>
-                                        {session.user?.image ? (
-                                            <img src={session.user.image} alt="user" />
-                                        ) : (
-                                            <AiOutlineUser />
-                                        )}
-                                    </div>
-                                    <div>
-                                        <p className='text-gray-500 text-sm'>Hello, {session.user?.name}</p>
-                                        <p className='font-medium'>ออกจากระบบ</p>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className='rounded-full border-2 border-gray-300 text-gray-500 text-[32px] w-[50px] h-[50px] grid place-items-center hover:bg-gray-50 transition-colors'>
+                        <div className='relative' ref={dropdownRef}>
+                            <div className='rounded-full border-2 border-gray-300 text-gray-500 text-[24px] w-[50px] h-[50px] grid place-items-center hover:bg-gray-50 transition-colors cursor-pointer overflow-hidden font-bold' onClick={handleProfileClick}>
+                                {session ? (
+                                    userImage ? (
+                                        <img src={userImage} alt="user" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <span className="text-sm">{getInitials(session.user?.email)}</span>
+                                    )
+                                ) : (
                                     <AiOutlineUser />
+                                )}
+                            </div>
+
+                            {isDropdownOpen && session && (
+                                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-1 z-20">
+                                    <Link href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setIsDropdownOpen(false)}>บัญชีของฉัน</Link>
+                                    <Link href="/wishlist" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setIsDropdownOpen(false)}>รายการสินค้าโปรด</Link>
+                                    <button onClick={() => signOut()} className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">ออกจากระบบ</button>
                                 </div>
                             )}
                         </div>
@@ -73,7 +102,7 @@ const Navbar = ({ setShowCart }: PropsType) => {
                             className='relative cursor-pointer'
                             onClick={handleCartClick}
                         >
-                            <div className='rounded-full border-2 border-gray-300 text-gray-500 text-[32px] w-[50px] h-[50px] grid place-items-center hover:bg-gray-50 transition-colors'>
+                            <div className='rounded-full border-2 border-gray-300 text-gray-500 text-[28px] w-[50px] h-[50px] grid place-items-center hover:bg-gray-50 transition-colors'>
                                 <AiOutlineShoppingCart />
                             </div>
 
