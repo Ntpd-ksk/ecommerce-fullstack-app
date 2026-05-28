@@ -1,14 +1,10 @@
-// ProductCard เป็นคอมโพเนนต์ที่แสดงข้อมูลสินค้าแต่ละรายการในรูปแบบการ์ด ซึ่งประกอบด้วยรูปภาพสินค้า หมวดหมู่สินค้า ชื่อสินค้า คะแนนรีวิว ราคา และปุ่มใส่ตะกร้า
-
 import {
-    AiFillStar,
-    AiOutlineStar,
     AiOutlineShoppingCart,
 } from "react-icons/ai";
-import toast from "react-hot-toast";
 import { useAppDispatch } from "@/redux/hook";
 import { addToCart } from "@/redux/features/cartSlice";
 import { makeToast } from "@/utils/helper";
+import Link from "next/link";
 
 interface propsType {
     id: string;
@@ -16,17 +12,24 @@ interface propsType {
     category: string;
     title: string;
     price: number;
+    discountPrice?: number;
 }
 
-const ProductCard = ({ id, img, category, title, price }: propsType) => {
+const ProductCard = ({ id, img, category, title, price, discountPrice }: propsType) => {
     const dispatch = useAppDispatch();
 
-    const addProductToCart = () => {
+    const addProductToCart = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Use discountPrice if available for cart, otherwise use regular price
+        const finalPrice = discountPrice || price;
+
         const payload = {
             id,
             img,
             title,
-            price,
+            price: finalPrice,
             quantity: 1,
         };
 
@@ -35,36 +38,36 @@ const ProductCard = ({ id, img, category, title, price }: propsType) => {
     };
 
     return (
-        <div className="border border-gray-200">
-            <div className="text-center border-b border-gray-200">
-                <img className="inline-block" src={img} alt={title} />
+        <Link href={`/product/${id}`} className="block border border-gray-200 hover:shadow-lg transition-shadow bg-white group">
+            <div className="text-center border-b border-gray-200 p-4 bg-[#f9f9f9]">
+                <img className="inline-block h-[200px] object-contain group-hover:scale-105 transition-transform" src={img} alt={title} />
             </div>
 
-            <div className="px-8 py-4">
-                <p className="text-gray-500 text-[14px] font-medium">{category}</p>
-                <h2 className="font-medium">{title}</h2>
-
-                <div className="mt-3 flex text-[#FFB21D] items-center">
-                    <AiFillStar />
-                    <AiFillStar />
-                    <AiFillStar />
-                    <AiFillStar />
-                    <AiOutlineStar />
-                    <p className="text-gray-600 text-[14px] ml-2">(3 รีวิว)</p>
-                </div>
+            <div className="px-6 py-4">
+                <p className="text-gray-500 text-[12px] font-medium uppercase">{category}</p>
+                <h2 className="font-bold text-gray-800 line-clamp-2 h-12 mt-1 transition-colors group-hover:text-accent">{title}</h2>
 
                 <div className="flex justify-between items-center mt-4">
-                    <h2 className="font-medium text-accent text-xl">฿{price}</h2>
+                    <div>
+                        {discountPrice ? (
+                            <div className="flex flex-col">
+                                <span className="text-gray-400 line-through text-xs">฿{price.toLocaleString()}</span>
+                                <span className="font-bold text-accent text-xl">฿{discountPrice.toLocaleString()}</span>
+                            </div>
+                        ) : (
+                            <h2 className="font-bold text-accent text-xl">฿{price.toLocaleString()}</h2>
+                        )}
+                    </div>
                     <div
-                        className="flex gap-2 items-center bg-pink text-white px-4 py-2 cursor-pointer
-                        hover:bg-accent"
+                        className="flex gap-2 items-center bg-accent text-white px-3 py-2 cursor-pointer
+                        hover:bg-[#d41a1a] rounded text-sm transition-colors shadow-sm"
                         onClick={addProductToCart}
                     >
-                        <AiOutlineShoppingCart /> ใส่ตะกร้า
+                        <AiOutlineShoppingCart size={18} />
                     </div>
                 </div>
             </div>
-        </div>
+        </Link>
     )
 }
 export default ProductCard

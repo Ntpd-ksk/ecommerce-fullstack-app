@@ -16,6 +16,7 @@ interface PropsType {
 const Navbar = ({ setShowCart }: PropsType) => {
     const { data: session } = useSession();
     const cartCount = useAppSelector((state) => state.cartReducer.length)
+    const wishlistCount = useAppSelector((state) => state.wishlistReducer.length)
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [userImage, setUserImage] = useState<string | null>(null);

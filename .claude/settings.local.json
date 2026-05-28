@@ -19,7 +19,15 @@
       "Bash(docker-compose up *)",
       "Bash(npm uninstall *)",
       "Bash(mkdir -p src/app/api/address/\\\\[id\\\\])",
-      "Bash(touch src/app/api/address/\\\\[id\\\\]/route.ts)"
+      "Bash(touch src/app/api/address/\\\\[id\\\\]/route.ts)",
+      "Bash(curl -s http://localhost:3001/api/get_products)",
+      "Bash(curl -s http://localhost:3001/api/product/cmppbg0m6000a11i6jfu7z9bv)",
+      "Bash(mv \"src/app/api/product/ [id]\" \"src/app/api/product/[id]\")",
+      "Bash(mv \"src/app/api/product/[id]/ [id]/route.ts\" \"src/app/api/product/[id]/route.ts\")",
+      "Bash(rm -rf \"src/app/api/product/[id]/ [id]\")"
+    ],
+    "additionalDirectories": [
+      "D:\\ไฟล์น้องตี๋\\Natapod\\Work\\csc350\\ecommerce-fullstack\\src\\app\\api\\product\\ [id]"
     ]
   }
 }

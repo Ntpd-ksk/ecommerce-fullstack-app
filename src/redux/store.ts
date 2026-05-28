@@ -4,11 +4,13 @@ import { configureStore } from "@reduxjs/toolkit"
 import cartReducer from "./features/cartSlice"
 import LoadingReducer from "./features/loadingSlice"
 import productReducer from "./features/productSlice"
+import wishlistReducer from "./features/wishlistSlice"
 export const store = configureStore({
     reducer: {
         cartReducer,
         productReducer,
         LoadingReducer,
+        wishlistReducer,
     },
     devTools: process.env.NODE_ENV !== "production",
 })

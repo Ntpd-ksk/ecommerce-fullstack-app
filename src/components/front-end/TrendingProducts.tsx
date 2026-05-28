@@ -7,7 +7,9 @@ interface IProduct {
     id: string
     imagePath: string
     name: string
+    brand: string
     price: number
+    discountPrice?: number
 }
 
 const TrendingProducts = () => {
@@ -27,9 +29,9 @@ const TrendingProducts = () => {
             <div className="sm:flex justify-between items-center">
                 <h2 className="text-4xl font-medium">สินค้าที่กำลังมาแรง</h2>
                 <div className="text-gray-500 flex gap-4 text-xl mt-4 sm:mt-0">
-                    <div className="text-black">ใหม่</div>
-                    <div>ฟีเจอร์</div>
-                    <div>สินค้าขายดี</div>
+                    <div className="text-black underline underline-offset-8 decoration-accent">ใหม่</div>
+                    <div className="hover:text-black cursor-pointer transition-colors">ฟีเจอร์</div>
+                    <div className="hover:text-black cursor-pointer transition-colors">สินค้าขายดี</div>
                 </div>
             </div>
 
@@ -41,7 +43,8 @@ const TrendingProducts = () => {
                         img={item.imagePath}
                         title={item.name}
                         price={item.price}
-                        category="สินค้าทั่วไป"
+                        discountPrice={item.discountPrice}
+                        category={item.brand || "สินค้าทั่วไป"}
                     />
                 ))}
             </div>
