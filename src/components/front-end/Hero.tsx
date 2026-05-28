@@ -1,6 +1,10 @@
 // Component Hero เป็นส่วนหนึ่งของหน้าเว็บที่มีลักษณะเป็น Hero Section ซึ่งเป็นส่วนที่โดดเด่นและมักใช้เพื่อโปรโมทสินค้าหรือบริการ
 
-const Hero = () => {
+interface PropsType {
+  scrollToProducts: () => void;
+}
+
+const Hero = ({ scrollToProducts }: PropsType) => {
     return (
         <div className="bg-[#EBEDF6] mt-4">
           <div className="container grid md:grid-cols-2 py-8">
@@ -18,13 +22,13 @@ const Hero = () => {
                 ข้อเสนอสุดพิเศษ <span className="text-red-600">-10%</span> ภายในสัปดาห์นี้
                 </h3>
 
-                <a
-                  className="inline-block  bg-white rounded-md px-6 py-3 hover:bg-accent
-                  hover:text-white font-bold"
-                  href="#"
+                <button
+                  className="inline-block bg-white rounded-md px-6 py-3 hover:bg-accent
+                  hover:text-white font-bold transition-colors shadow-sm"
+                  onClick={scrollToProducts}
                 >
                   ช้อปเลย
-                </a>
+                </button>
                 </div>
                 </div>
 

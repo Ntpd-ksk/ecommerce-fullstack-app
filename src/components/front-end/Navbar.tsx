@@ -11,10 +11,12 @@ import axios from "axios";
 import { openAuthModal, closeAuthModal } from "@/redux/features/authModalSlice";
 
 interface PropsType {
-    setShowCart: Dispatch<SetStateAction<boolean>>
+    setShowCart: Dispatch<SetStateAction<boolean>>;
+    setSearchQuery?: Dispatch<SetStateAction<string>>;
+    scrollToProducts?: () => void;
 }
 
-const Navbar = ({ setShowCart }: PropsType) => {
+const Navbar = ({ setShowCart, setSearchQuery, scrollToProducts }: PropsType) => {
     const dispatch = useAppDispatch();
     const { data: session } = useSession();
     const cartCount = useAppSelector((state) => state.cartReducer.length)
@@ -22,7 +24,37 @@ const Navbar = ({ setShowCart }: PropsType) => {
     const isAuthModalOpen = useAppSelector((state) => state.authModalReducer.isOpen)
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [userImage, setUserImage] = useState<string | null>(null);
+    const [searchValue, setSearchValue] = useState("");
+    const [suggestions, setSuggestions] = useState<any[]>([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const searchRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (searchValue.trim().length > 0) {
+            axios.get("/api/get_products").then(res => {
+                const filtered = res.data.filter((p: any) =>
+                    p.name.toLowerCase().includes(searchValue.toLowerCase())
+                ).slice(0, 5);
+                setSuggestions(filtered);
+                setShowSuggestions(true);
+            }).catch(() => {});
+        } else {
+            setSuggestions([]);
+            setShowSuggestions(false);
+        }
+    }, [searchValue]);
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (setSearchQuery) {
+            setSearchQuery(searchValue);
+        }
+        setShowSuggestions(false);
+        if (scrollToProducts) {
+            scrollToProducts();
+        }
+    };
 
     useEffect(() => {
         if (session) {
@@ -38,6 +70,9 @@ const Navbar = ({ setShowCart }: PropsType) => {
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
                 setIsDropdownOpen(false);
+            }
+            if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+                setShowSuggestions(false);
             }
         };
         document.addEventListener("mousedown", handleClickOutside);
@@ -70,14 +105,38 @@ const Navbar = ({ setShowCart }: PropsType) => {
             <div className="container">
                 <div className="flex justify-between items-center">
                     <Link href="/" className="text-4xl font-bold">Natapod Shop</Link>
-                    <div className='lg:flex hidden w-full max-w-[500px]'>
-                        <input className='border-2 border-accent px-6 py-2 w-full'
-                            type="text"
-                            placeholder='ค้นหาสินค้า...'
-                        />
-                        <div className='bg-accent text-white text-[26px] grid place-items-center px-4'>
-                            <BsSearch />
-                        </div>
+                    <div className='lg:flex hidden w-full max-w-[500px] relative' ref={searchRef}>
+                        <form onSubmit={handleSearch} className="flex w-full">
+                            <input className='border-2 border-accent px-6 py-2 w-full outline-none'
+                                type="text"
+                                placeholder='ค้นหาสินค้า...'
+                                value={searchValue}
+                                onChange={(e) => setSearchValue(e.target.value)}
+                                onFocus={() => searchValue.trim().length > 0 && setShowSuggestions(true)}
+                            />
+                            <button type="submit" className='bg-accent text-white text-[26px] grid place-items-center px-4 hover:bg-[#d41a1a] transition-colors'>
+                                <BsSearch />
+                            </button>
+                        </form>
+
+                        {showSuggestions && suggestions.length > 0 && (
+                            <div className="absolute top-full left-0 w-full bg-white border border-gray-200 rounded-b-md shadow-xl z-50 overflow-hidden">
+                                {suggestions.map((product) => (
+                                    <Link
+                                        key={product.id}
+                                        href={`/product/${product.id}`}
+                                        className="flex items-center gap-4 px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-none transition-colors"
+                                        onClick={() => setShowSuggestions(false)}
+                                    >
+                                        <img src={product.imagePath} alt="" className="w-10 h-10 object-contain bg-gray-50 p-1" />
+                                        <div className="flex flex-col">
+                                            <span className="text-sm font-medium text-gray-800 line-clamp-1">{product.name}</span>
+                                            <span className="text-xs text-accent font-bold">฿{(product.discountPrice || product.price).toLocaleString()}</span>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        )}
                     </div>
                     <div className='flex gap-4 md:gap-8 items-center'>
                         <div className='relative' ref={dropdownRef}>

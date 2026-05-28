@@ -14,17 +14,28 @@ import React, { useState } from "react";
 const Home = () => {
   // สร้าง state ชื่อ showCart โดยใช้ useState ซึ่งเริ่มต้นด้วยค่าเริ่มต้นเป็น false เพื่อแสดงว่าตะกร้าสินค้าไม่ถูกแสดงอยู่
   const [showCart, setShowCart] = useState(false)
-  
-  
+  const [searchQuery, setSearchQuery] = useState("")
+  const [filterType, setFilterType] = useState("ใหม่")
+
+  const scrollToProducts = () => {
+    const element = document.getElementById("trending-products")
+    if (element) {
+      // Get the element's position
+      const yOffset = -100; // Offset to see the heading
+      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: "smooth" });
+    }
+  }
+
   return <main>
     {/* ส่ง setShowCart เป็น props เพื่อให้ Navbar Component สามารถเปลี่ยนแปลงค่า showCart ได้ */}
-    <Navbar setShowCart={setShowCart} />
+    <Navbar setShowCart={setShowCart} setSearchQuery={setSearchQuery} scrollToProducts={scrollToProducts} />
     {/* ใช้ตัวแปร showCart เพื่อตรวจสอบว่าตะกร้าสินค้าควรถูกแสดงหรือไม่ ถ้า showCart เป็น true จะแสดง Component Cart */}
     {showCart && <Cart setShowCart={setShowCart} />}
     {/* แสดง Component ตามลำดับ */}
-    <Hero />
+    <Hero scrollToProducts={scrollToProducts} />
     <Feature />
-    <TrendingProducts />
+    <TrendingProducts searchQuery={searchQuery} filterType={filterType} setFilterType={setFilterType} />
     <Banner />
     <Footer />
   </main>
