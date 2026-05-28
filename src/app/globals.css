@@ -6,7 +6,7 @@
 
 @layer base {
   body {
-    @apply bg-surface text-text-primary font-body antialiased;
+    @apply bg-white text-text-primary font-body antialiased;
   }
 
   th,
