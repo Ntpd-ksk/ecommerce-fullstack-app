@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm typecheck *)",
+      "Bash(pnpm build *)",
+      "Bash(pnpm list *)",
+      "Bash(pnpm add *)",
+      "Bash(ls /c/Users/ASUS/Desktop/Intern/pinto.pinto-app.com/)",
+      "Read(//c/Users/ASUS/Desktop/Intern/pinto.pinto-app.com//**)",
+      "Skill(ui-ux-pro-max)",
+      "Skill(ui-ux-pro-max:*)",
+      "Bash(ls \"c:/Users/ASUS/Desktop/Intern/\" 2>/dev/null)",
+      "Read(//c/Users/ASUS/Desktop/Intern/**)",
+      "Bash(npx vite *)",
+      "Bash(pnpm dev *)"
+    ]
+  }
+}
