@@ -252,10 +252,12 @@ const ProductDetail = () => {
                                         <td className="py-4 px-4 w-2/3 text-gray-800">{value}</td>
                                     </tr>
                                 ))}
-                                <tr className="border-b last:border-0">
-                                    <td className="py-4 px-4 w-1/3 text-gray-600 font-medium bg-gray-50">Warranty</td>
-                                    <td className="py-4 px-4 w-2/3 text-gray-800">{product.warranty}</td>
-                                </tr>
+                                {product.warranty && (
+                                    <tr className="border-b last:border-0">
+                                        <td className="py-4 px-4 w-1/3 text-gray-600 font-medium bg-gray-50">Warranty</td>
+                                        <td className="py-4 px-4 w-2/3 text-gray-800">{product.warranty}</td>
+                                    </tr>
+                                )}
                             </tbody>
                         </table>
                     </div>
