@@ -104,34 +104,48 @@ const Navbar = ({ setShowCart, setSearchQuery, scrollToProducts }: PropsType) =>
         <div className='pt-4 bg-white top-0 sticky z-10'>
             <div className="container">
                 <div className="flex justify-between items-center">
-                    <Link href="/" className="text-4xl font-bold">Natapod Shop</Link>
-                    <div className='lg:flex hidden w-full max-w-[500px] relative' ref={searchRef}>
-                        <form onSubmit={handleSearch} className="flex w-full">
-                            <input className='border-2 border-accent px-6 py-2 w-full outline-none'
-                                type="text"
-                                placeholder='ค้นหาสินค้า...'
-                                value={searchValue}
-                                onChange={(e) => setSearchValue(e.target.value)}
-                                onFocus={() => searchValue.trim().length > 0 && setShowSuggestions(true)}
-                            />
-                            <button type="submit" className='bg-accent text-white text-[26px] grid place-items-center px-4 hover:bg-[#d41a1a] transition-colors'>
-                                <BsSearch />
-                            </button>
+                    <Link href="/" className="text-3xl font-heading tracking-tight flex items-center group">
+                        <span className="text-secondary group-hover:text-primary transition-colors duration-300">NATAPOD</span>
+                        <span className="bg-primary text-white px-2 py-0.5 rounded ml-1 skew-x-[-12deg] group-hover:shadow-[0_0_15px_rgba(229,57,53,0.4)] transition-all duration-300">GEAR</span>
+                    </Link>
+                    <div className='lg:flex hidden w-full max-w-[520px] relative group' ref={searchRef}>
+                        <form onSubmit={handleSearch} className="flex w-full relative">
+                            <div className="relative flex w-full items-center rounded-full border-2 border-gray-200 bg-gray-50/80 transition-all duration-300 focus-within:border-primary focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(229,57,53,0.12)] overflow-hidden">
+                                <input className='pl-6 pr-4 py-2.5 w-full bg-transparent outline-none text-sm text-secondary placeholder:text-gray-400 transition-colors duration-200'
+                                    type="text"
+                                    placeholder='ค้นหาสินค้าเลย'
+                                    value={searchValue}
+                                    onChange={(e) => setSearchValue(e.target.value)}
+                                    onFocus={() => searchValue.trim().length > 0 && setShowSuggestions(true)}
+                                />
+                                {searchValue && (
+                                    <button
+                                        type="button"
+                                        className="mr-3 text-gray-300 hover:text-gray-500 transition-colors cursor-pointer"
+                                        onClick={() => { setSearchValue(""); setSuggestions([]); setShowSuggestions(false); }}
+                                    >
+                                        &times;
+                                    </button>
+                                )}
+                                <button type="submit" className='bg-primary text-white text-lg grid place-items-center h-full px-6 hover:bg-primary-700 active:opacity-90 transition-all duration-200 cursor-pointer'>
+                                    <BsSearch />
+                                </button>
+                            </div>
                         </form>
 
                         {showSuggestions && suggestions.length > 0 && (
-                            <div className="absolute top-full left-0 w-full bg-white border border-gray-200 rounded-b-md shadow-xl z-50 overflow-hidden">
+                            <div className="absolute top-full mt-2 left-2 right-2 bg-white border border-gray-100 rounded-2xl shadow-xl z-50 overflow-hidden">
                                 {suggestions.map((product) => (
                                     <Link
                                         key={product.id}
                                         href={`/product/${product.id}`}
-                                        className="flex items-center gap-4 px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-none transition-colors"
+                                        className="flex items-center gap-4 px-5 py-3 hover:bg-primary-50 border-b border-gray-50 last:border-none transition-colors cursor-pointer"
                                         onClick={() => setShowSuggestions(false)}
                                     >
-                                        <img src={product.imagePath} alt="" className="w-10 h-10 object-contain bg-gray-50 p-1" />
-                                        <div className="flex flex-col">
-                                            <span className="text-sm font-medium text-gray-800 line-clamp-1">{product.name}</span>
-                                            <span className="text-xs text-accent font-bold">฿{(product.discountPrice || product.price).toLocaleString()}</span>
+                                        <img src={product.imagePath} alt="" className="w-10 h-10 object-contain bg-gray-50 p-1 rounded-lg" />
+                                        <div className="flex flex-col flex-1 min-w-0">
+                                            <span className="text-sm font-medium text-secondary line-clamp-1">{product.name}</span>
+                                            <span className="text-xs text-primary font-bold">฿{(product.discountPrice || product.price).toLocaleString()}</span>
                                         </div>
                                     </Link>
                                 ))}
