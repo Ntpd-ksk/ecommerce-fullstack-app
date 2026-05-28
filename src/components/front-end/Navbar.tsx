@@ -92,9 +92,21 @@ const Navbar = ({ setShowCart }: PropsType) => {
 
                             {isDropdownOpen && session && (
                                 <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-1 z-20">
+                                    <div className="px-4 py-2 border-b border-gray-100 mb-1">
+                                        <p className="text-xs text-gray-400">เข้าสู่ระบบในฐานะ</p>
+                                        <p className="text-sm font-semibold truncate">{session.user?.email}</p>
+                                        <span className={`text-[10px] px-2 py-0.5 rounded-full ${session.user?.role === 'ADMIN' ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'}`}>
+                                            {session.user?.role}
+                                        </span>
+                                    </div>
+
+                                    {session.user?.role === "ADMIN" && (
+                                        <Link href="/admin/dashboard" className="block px-4 py-2 text-sm text-purple-700 font-semibold hover:bg-purple-50" onClick={() => setIsDropdownOpen(false)}>Admin Dashboard</Link>
+                                    )}
+
                                     <Link href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setIsDropdownOpen(false)}>บัญชีของฉัน</Link>
                                     <Link href="/wishlist" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setIsDropdownOpen(false)}>รายการสินค้าโปรด</Link>
-                                    <button onClick={() => signOut()} className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">ออกจากระบบ</button>
+                                    <button onClick={() => signOut()} className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 border-t border-gray-100 mt-1">ออกจากระบบ</button>
                                 </div>
                             )}
                         </div>

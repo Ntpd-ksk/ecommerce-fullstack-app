@@ -2,7 +2,7 @@
 
 "use client"
 
-import { MdDashboard, MdManageAccounts } from "react-icons/md"
+import { MdDashboard, MdManageAccounts, MdOutlineHome } from "react-icons/md"
 import { GrTransaction } from "react-icons/gr"
 import { IoAnalytics, IoSettings } from "react-icons/io5"
 import { RiShoppingCartLine } from "react-icons/ri"
@@ -10,6 +10,11 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 
 const menus =[
+  {
+    title: "กลับหน้าหลัก",
+    icon: <MdOutlineHome />,
+    href: "/",
+  },
   {
     title: "รายการสินค้าทั้งหมด",
     icon: <MdDashboard />,

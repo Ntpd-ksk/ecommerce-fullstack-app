@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { AiOutlineUser, AiOutlineHome, AiOutlineCamera, AiOutlineEdit, AiOutlineDelete, AiOutlineCheck, AiOutlinePlus } from "react-icons/ai";
+import { AiOutlineUser, AiOutlineHome, AiOutlineCamera, AiOutlineEdit, AiOutlineDelete, AiOutlineCheck, AiOutlinePlus, AiOutlineHeart } from "react-icons/ai";
 import Navbar from "@/components/front-end/Navbar";
 import Footer from "@/components/front-end/Footer";
 import Cart from "@/components/front-end/Cart";
@@ -240,23 +240,36 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              <nav className="space-y-2">
-                <button
-                  onClick={() => setActiveTab("info")}
-                  className={`w-full flex items-center gap-3 px-4 py-2 rounded-md transition-colors ${
-                    activeTab === "info" ? "bg-accent text-white" : "hover:bg-gray-100"
-                  }`}
-                >
-                  <AiOutlineUser /> ข้อมูลส่วนตัว
-                </button>
-                <button
-                  onClick={() => setActiveTab("address")}
-                  className={`w-full flex items-center gap-3 px-4 py-2 rounded-md transition-colors ${
-                    activeTab === "address" ? "bg-accent text-white" : "hover:bg-gray-100"
-                  }`}
-                >
-                  <AiOutlineHome /> ที่อยู่ในการจัดส่ง
-                </button>
+              <nav className="space-y-4">
+                <div className="space-y-2">
+                  <p className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">รายการ</p>
+                  <button
+                    onClick={() => router.push("/wishlist")}
+                    className="w-full flex items-center gap-3 px-4 py-2 rounded-md transition-colors hover:bg-gray-100"
+                  >
+                    <AiOutlineHeart /> รายการสินค้าโปรด
+                  </button>
+                </div>
+
+                <div className="space-y-2">
+                  <p className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">บัญชี</p>
+                  <button
+                    onClick={() => setActiveTab("info")}
+                    className={`w-full flex items-center gap-3 px-4 py-2 rounded-md transition-colors ${
+                      activeTab === "info" ? "bg-accent text-white" : "hover:bg-gray-100"
+                    }`}
+                  >
+                    <AiOutlineUser /> ข้อมูลส่วนตัว
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("address")}
+                    className={`w-full flex items-center gap-3 px-4 py-2 rounded-md transition-colors ${
+                      activeTab === "address" ? "bg-accent text-white" : "hover:bg-gray-100"
+                    }`}
+                  >
+                    <AiOutlineHome /> ที่อยู่ในการจัดส่ง
+                  </button>
+                </div>
               </nav>
             </div>
           </div>
