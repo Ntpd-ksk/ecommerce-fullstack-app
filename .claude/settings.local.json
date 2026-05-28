@@ -12,7 +12,12 @@
       "Bash(ls \"c:/Users/ASUS/Desktop/Intern/\" 2>/dev/null)",
       "Read(//c/Users/ASUS/Desktop/Intern/**)",
       "Bash(npx vite *)",
-      "Bash(pnpm dev *)"
+      "Bash(pnpm dev *)",
+      "Bash(npx prisma *)",
+      "Bash(npm install *)",
+      "Bash(docker-compose ps *)",
+      "Bash(docker-compose up *)",
+      "Bash(npm uninstall *)"
     ]
   }
 }

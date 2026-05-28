@@ -1,23 +1,66 @@
-// โค้ดนี้เป็นการกำหนดการตั้งค่า NextAuth สำหรับการใช้งานระบบการตรวจสอบและการจัดการเซสชันของผู้ใช้ใน Next.js โดยใช้ Google OAuth2 เป็นตัวยืนยันตัวตน
-
-// นำเข้า NextAuth เพื่อใช้ในการกำหนดการตั้งค่าระบบการตรวจสอบและการจัดการเซสชันของผู้ใช้
 import NextAuth from "next-auth/next";
-// นำเข้า GoogleProvider ในการตรวจสอบตัวตนผ่าน Google OAuth2
-import GoogleProvider from "next-auth/providers/google"
+import CredentialsProvider from "next-auth/providers/credentials";
+import { compare } from "bcryptjs";
+import { prisma } from "@/libs/prisma";
 
-// ประกาศตัวแปร handler ซึ่งมีค่าเท่ากับการเรียกใช้ NextAuth โดยกำหนดค่าต่างๆ
 const handler = NextAuth({
-    // เป็นอาร์เรย์ของ providers ที่ใช้ในการตรวจสอบตัวตนของผู้ใช้
-    providers: [
-        // กำหนด clientId และ clientSecret โดยใช้ค่าที่กำหนดไว้ในไฟล์ .env
-        GoogleProvider({
-            clientId: process.env.CLIENT_ID!,
-            clientSecret: process.env.CLIENT_SECRET!
-        })
-    ],
-    // เป็นค่า secret ที่ใช้ในการเข้ารหัสข้อมูลเซสชัน
-    secret: process.env.NEXTAUTH_SECRET
-})
+  providers: [
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Email and password are required");
+        }
 
-// ส่งออก handler เพื่อให้สามารถนำไปใช้งานในตัวแปร GET และ POST โดยตรง
-export {handler as GET, handler as POST}
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email },
+        });
+
+        if (!user || !user.password) {
+          throw new Error("Invalid email or password");
+        }
+
+        const isValid = await compare(credentials.password, user.password);
+        if (!isValid) {
+          throw new Error("Invalid email or password");
+        }
+
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        };
+      },
+    }),
+  ],
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = (user as any).role;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        (session.user as any).id = token.id;
+        (session.user as any).role = token.role;
+      }
+      return session;
+    },
+  },
+  pages: {
+    signIn: "/login",
+  },
+  session: {
+    strategy: "jwt",
+  },
+  secret: process.env.NEXTAUTH_SECRET,
+});
+
+export { handler as GET, handler as POST };

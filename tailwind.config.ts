@@ -1,7 +1,6 @@
-import { withUt } from "uploadthing/tw";
- 
-export default withUt({
-  // Your existing Tailwind config
+import type { Config } from "tailwindcss";
+
+const config: Config = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -15,7 +14,6 @@ export default withUt({
         topHeadingSecondary: "#021d35",
         pink: "#FD4B6B",
       },
-
       container: {
         center: true,
         padding: "15px",
@@ -23,4 +21,6 @@ export default withUt({
     },
   },
   plugins: [],
-});
+};
+
+export default config;
