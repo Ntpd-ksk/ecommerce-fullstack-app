@@ -24,7 +24,9 @@
       "Bash(curl -s http://localhost:3001/api/product/cmppbg0m6000a11i6jfu7z9bv)",
       "Bash(mv \"src/app/api/product/ [id]\" \"src/app/api/product/[id]\")",
       "Bash(mv \"src/app/api/product/[id]/ [id]/route.ts\" \"src/app/api/product/[id]/route.ts\")",
-      "Bash(rm -rf \"src/app/api/product/[id]/ [id]\")"
+      "Bash(rm -rf \"src/app/api/product/[id]/ [id]\")",
+      "Bash(npm run *)",
+      "Bash(yarn dev *)"
     ],
     "additionalDirectories": [
       "D:\\ไฟล์น้องตี๋\\Natapod\\Work\\csc350\\ecommerce-fullstack\\src\\app\\api\\product\\ [id]"

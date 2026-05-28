@@ -3,14 +3,26 @@
 import { RxCross1 } from 'react-icons/rx'
 import CartProduct from './CartProduct'
 import { useAppSelector } from '@/redux/hook'
+import { useRouter } from 'next/navigation'
 
 const Cart = ({ setShowCart }: any) => {
     const products = useAppSelector((state) => state.cartReducer)
+    const router = useRouter()
 
     const getTotal = () => {
         let total = 0
         products.forEach((item) => (total = total + item.price * item.quantity))
         return total
+    }
+
+    const handleViewCart = () => {
+        setShowCart(false)
+        router.push('/cart')
+    }
+
+    const handleCheckout = () => {
+        setShowCart(false)
+        router.push('/checkout')
     }
 
     return (
@@ -43,12 +55,16 @@ const Cart = ({ setShowCart }: any) => {
                     <p>฿{getTotal()}.00</p>
                 </div>
 
-                <button className='bg-black text-white text-center w-full rounded-3xl py-2
-                hover:bg-accent mb-4 mt-4'>
+                <button
+                    className='bg-black text-white text-center w-full rounded-3xl py-2 hover:bg-accent mb-4 mt-4'
+                    onClick={handleViewCart}
+                >
                     ดูตะกร้า
                 </button>
-                <button className='bg-black text-white text-center w-full rounded-3xl py-2
-                hover:bg-accent'>
+                <button
+                    className='bg-black text-white text-center w-full rounded-3xl py-2 hover:bg-accent'
+                    onClick={handleCheckout}
+                >
                     ชำระเงิน
                 </button>
             </div>

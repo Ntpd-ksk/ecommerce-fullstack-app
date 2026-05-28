@@ -5,7 +5,7 @@ import Navbar from "@/components/front-end/Navbar";
 import Cart from "@/components/front-end/Cart";
 import Footer from "@/components/front-end/Footer";
 import axios from "axios";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { AiFillStar, AiOutlineShoppingCart, AiOutlineHeart, AiFillHeart, AiOutlineShareAlt } from "react-icons/ai";
 import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import { addToCart } from "@/redux/features/cartSlice";
@@ -30,6 +30,7 @@ interface IProduct {
 
 const ProductDetail = () => {
     const { id } = useParams();
+    const router = useRouter();
     const { data: session } = useSession();
     const [product, setProduct] = useState<IProduct | null>(null);
     const [loading, setLoading] = useState(true);
@@ -81,15 +82,14 @@ const ProductDetail = () => {
             return;
         }
         if (product) {
-            const payload = {
-                id: product.id,
+            const params = new URLSearchParams({
+                productId: product.id,
+                name: product.name,
+                price: product.discountPrice || product.price,
                 img: product.imagePath,
-                title: product.name,
-                price: parseFloat(product.price),
-                quantity: quantity,
-            };
-            dispatch(addToCart(payload));
-            setShowCart(true);
+                qty: quantity.toString(),
+            });
+            router.push(`/checkout?${params.toString()}`);
         }
     };
 
