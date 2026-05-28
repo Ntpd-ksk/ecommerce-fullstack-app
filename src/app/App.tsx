@@ -11,10 +11,14 @@ import { Provider } from "react-redux"
 import { useSession } from "next-auth/react"
 import { useAppDispatch } from "@/redux/hook"
 import { fetchWishlist } from "@/redux/features/wishlistSlice"
+import AuthModal from "@/components/front-end/AuthModal"
+import { useAppSelector } from "@/redux/hook"
+import { closeAuthModal } from "@/redux/features/authModalSlice"
 
 const AppWrapper = ({ children }: { children: React.ReactNode }) => {
   const { data: session } = useSession()
   const dispatch = useAppDispatch()
+  const isAuthModalOpen = useAppSelector((state) => state.authModalReducer.isOpen)
 
   React.useEffect(() => {
     if (session) {
@@ -22,7 +26,12 @@ const AppWrapper = ({ children }: { children: React.ReactNode }) => {
     }
   }, [session, dispatch])
 
-  return <>{children}</>
+  return (
+    <>
+      {children}
+      <AuthModal isOpen={isAuthModalOpen} onClose={() => dispatch(closeAuthModal())} />
+    </>
+  )
 }
 
 const App = ({children}: {children: React.ReactNode}) => {

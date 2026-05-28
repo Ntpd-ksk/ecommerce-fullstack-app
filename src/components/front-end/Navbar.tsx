@@ -6,7 +6,6 @@ import { AiOutlineShoppingCart, AiOutlineUser, AiOutlineHeart } from 'react-icon
 import { BsSearch } from 'react-icons/bs'
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
-import AuthModal from "./AuthModal";
 import axios from "axios";
 import { openAuthModal, closeAuthModal } from "@/redux/features/authModalSlice";
 
@@ -101,7 +100,7 @@ const Navbar = ({ setShowCart, setSearchQuery, scrollToProducts }: PropsType) =>
     };
 
     return (
-        <div className='pt-4 bg-white top-0 sticky z-10'>
+        <div className='pt-4 bg-white/95 backdrop-blur-md top-0 sticky z-50 shadow-sm'>
             <div className="container">
                 <div className="flex justify-between items-center">
                     <Link href="/" className="text-3xl font-heading tracking-tight flex items-center group">
@@ -205,8 +204,6 @@ const Navbar = ({ setShowCart, setSearchQuery, scrollToProducts }: PropsType) =>
                 </div>
                 <div className='border-b border-gray-200 pt-4' />
             </div>
-
-            <AuthModal isOpen={isAuthModalOpen} onClose={() => dispatch(closeAuthModal())} />
         </div>
     )
 }

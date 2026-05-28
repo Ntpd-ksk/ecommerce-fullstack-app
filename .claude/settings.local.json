@@ -32,7 +32,8 @@
       "Bash(mv \"src/app/api/admin/orders/ [orderId]\" src/app/api/admin/orders/\\\\[orderId\\\\])",
       "Bash(rm -rf src/app/api/admin/orders/\\\\[orderId\\\\])",
       "Bash(python3 .claude/skills/ui-ux-pro-max/scripts/search.py \"ecommerce gaming gear computer hardware red black white\" --design-system -p \"GamingGearStore\" -f markdown)",
-      "Bash(python .claude/skills/ui-ux-pro-max/scripts/search.py \"ecommerce gaming gear computer hardware red black white\" --design-system -p \"GamingGearStore\" -f markdown)"
+      "Bash(python .claude/skills/ui-ux-pro-max/scripts/search.py \"ecommerce gaming gear computer hardware red black white\" --design-system -p \"GamingGearStore\" -f markdown)",
+      "Bash(python \".claude/skills/ui-ux-pro-max/scripts/search.py\" \"ecommerce tech product landing page professional\" --design-system -p \"Fakduai Store\")"
     ],
     "additionalDirectories": [
       "D:\\ไฟล์น้องตี๋\\Natapod\\Work\\csc350\\ecommerce-fullstack\\src\\app\\api\\product\\ [id]",

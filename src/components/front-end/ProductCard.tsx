@@ -1,84 +1,121 @@
-import {
-    AiOutlineShoppingCart,
-} from "react-icons/ai";
-import { useAppDispatch } from "@/redux/hook";
-import { addToCart } from "@/redux/features/cartSlice";
-import { makeToast } from "@/utils/helper";
-import Link from "next/link";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { openAuthModal } from "@/redux/features/authModalSlice";
+"use client"
+
+import { AiOutlineShoppingCart, AiOutlineSafety } from "react-icons/ai"
+import { useAppDispatch } from "@/redux/hook"
+import { addToCart } from "@/redux/features/cartSlice"
+import { makeToast } from "@/utils/helper"
+import Link from "next/link"
+import { useSession } from "next-auth/react"
+import { openAuthModal } from "@/redux/features/authModalSlice"
 
 interface propsType {
-    id: string;
-    img: string;
-    category: string;
-    title: string;
-    price: number;
-    discountPrice?: number;
+  id: string
+  img: string
+  category: string
+  title: string
+  price: number
+  discountPrice?: number
+  warrantyTag?: string
 }
 
-const ProductCard = ({ id, img, category, title, price, discountPrice }: propsType) => {
-    const dispatch = useAppDispatch();
-    const { data: session } = useSession();
-    const router = useRouter();
+const ProductCard = ({
+  id,
+  img,
+  category,
+  title,
+  price,
+  discountPrice,
+  warrantyTag = "ประกัน 1 ปี",
+}: propsType) => {
+  const dispatch = useAppDispatch()
+  const { data: session } = useSession()
 
-    const addProductToCart = (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
+  const addProductToCart = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
 
-        if (!session) {
-            makeToast("กรุณาเข้าสู่ระบบก่อนเพิ่มสินค้าลงตะกร้า");
-            dispatch(openAuthModal());
-            return;
-        }
+    if (!session) {
+      makeToast("กรุณาเข้าสู่ระบบก่อนเพิ่มสินค้าลงตะกร้า")
+      dispatch(openAuthModal())
+      return
+    }
 
-        // Use discountPrice if available for cart, otherwise use regular price
-        const finalPrice = discountPrice || price;
+    const finalPrice = discountPrice || price
+    dispatch(addToCart({ id, img, title, price: finalPrice, quantity: 1 }))
+    makeToast("เพิ่มสินค้าลงตะกร้าแล้ว")
+  }
 
-        const payload = {
-            id,
-            img,
-            title,
-            price: finalPrice,
-            quantity: 1,
-        };
+  const discountPercent =
+    discountPrice && price > 0
+      ? Math.round(((price - discountPrice) / price) * 100)
+      : 0
 
-        dispatch(addToCart(payload));
-        makeToast("เพิ่มสินค้าลงตะกร้าแล้ว");
-    };
+  return (
+    <Link href={`/product/${id}`} className="block group">
+      <div className="bg-white rounded-xl shadow-card hover:shadow-card-hover hover:scale-[1.02] transition-all duration-300 ease-out-expo overflow-hidden cursor-pointer">
+        {/* Image */}
+        <div className="relative aspect-square bg-surface-muted p-4 flex items-center justify-center overflow-hidden">
+          <img
+            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 ease-out-expo"
+            src={img}
+            alt={title}
+            loading="lazy"
+          />
+          {discountPercent > 0 && (
+            <span className="absolute top-3 left-3 bg-primary text-white text-xs font-semibold px-2.5 py-1 rounded-full">
+              -{discountPercent}%
+            </span>
+          )}
+        </div>
 
-    return (
-        <Link href={`/product/${id}`} className="block border border-gray-200 hover:shadow-lg transition-shadow bg-white group">
-            <div className="text-center border-b border-gray-200 p-4 bg-[#f9f9f9]">
-                <img className="inline-block h-[200px] object-contain group-hover:scale-105 transition-transform" src={img} alt={title} />
-            </div>
+        {/* Info */}
+        <div className="p-4 space-y-2">
+          <p className="text-text-secondary text-xs font-medium uppercase tracking-wide truncate">
+            {category}
+          </p>
 
-            <div className="px-6 py-4">
-                <p className="text-gray-500 text-[12px] font-medium uppercase">{category}</p>
-                <h2 className="font-bold text-gray-800 line-clamp-2 h-12 mt-1 transition-colors group-hover:text-accent">{title}</h2>
+          <h3 className="text-sm font-semibold text-text-primary leading-snug line-clamp-2 min-h-[2.5rem] group-hover:text-primary transition-colors duration-200">
+            {title}
+          </h3>
 
-                <div className="flex justify-between items-center mt-4">
-                    <div>
-                        {discountPrice ? (
-                            <div className="flex flex-col">
-                                <span className="text-gray-400 line-through text-xs">฿{price.toLocaleString()}</span>
-                                <span className="font-bold text-accent text-xl">฿{discountPrice.toLocaleString()}</span>
-                            </div>
-                        ) : (
-                            <h2 className="font-bold text-accent text-xl">฿{price.toLocaleString()}</h2>
-                        )}
-                    </div>
-                    <div
-                        className="flex gap-2 items-center bg-accent text-white px-3 py-2 cursor-pointer
-                        hover:bg-[#d41a1a] rounded text-sm transition-colors shadow-sm"
-                        onClick={addProductToCart}
-                    >
-                        <AiOutlineShoppingCart size={18} />
-                    </div>
-                </div>
-            </div>
-        </Link>
-    )
+          {/* Price */}
+          <div className="pt-1">
+            {discountPrice ? (
+              <div className="flex items-baseline gap-2 flex-wrap">
+                <span className="text-lg font-bold text-primary">
+                  ฿{discountPrice.toLocaleString()}
+                </span>
+                <span className="text-xs text-text-muted line-through">
+                  ฿{price.toLocaleString()}
+                </span>
+              </div>
+            ) : (
+              <span className="text-lg font-bold text-primary">
+                ฿{price.toLocaleString()}
+              </span>
+            )}
+          </div>
+
+          {/* Footer: Warranty + Cart */}
+          <div className="flex items-center justify-between pt-2 border-t border-border-light">
+            <span className="inline-flex items-center gap-1 text-[11px] text-text-secondary">
+              <AiOutlineSafety className="text-primary" size={14} />
+              {warrantyTag}
+            </span>
+
+            <button
+              type="button"
+              aria-label="เพิ่มลงตะกร้า"
+              className="flex items-center justify-center w-9 h-9 rounded-lg bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors duration-200 cursor-pointer"
+              onClick={addProductToCart}
+            >
+              <AiOutlineShoppingCart size={16} />
+            </button>
+          </div>
+        </div>
+      </div>
+    </Link>
+  )
 }
+
 export default ProductCard

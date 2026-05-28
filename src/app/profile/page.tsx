@@ -849,16 +849,33 @@ function ProfileContent() {
                 )}
                 {selectedOrder.paymentMethod === 'promptpay' && (
                   <div>
-                    <p className="text-2xl mb-2">📱</p>
+                    <div className="flex justify-center mb-4">
+                      <img
+                        src="https://upload.wikimedia.org/wikipedia/commons/c/c5/PromptPay-logo.png"
+                        alt="PromptPay Logo"
+                        className="h-8 object-contain"
+                      />
+                    </div>
                     <p className="font-bold text-lg mb-4 text-gray-800">พร้อมเพย์ (PromptPay)</p>
                     <div className="flex flex-col items-center">
-                      <div className="bg-white p-4 rounded-xl border border-accent/10 mb-4 shadow-sm">
-                        {/* Placeholder QR Code */}
-                        <div className="w-48 h-48 bg-gray-100 flex items-center justify-center border-2 border-dashed border-gray-300">
-                          <p className="text-xs text-gray-400">QR CODE PROMPTPAY</p>
+                      <div className="bg-white p-4 rounded-xl border border-accent/10 mb-4 shadow-sm relative">
+                        {/* Mock QR Code */}
+                        <div className="w-48 h-48 bg-white flex items-center justify-center border-2 border-gray-100">
+                          <img
+                            src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=0812345678&color=003b6a`}
+                            alt="QR Code PromptPay"
+                            className="w-full h-full p-1"
+                          />
+                        </div>
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <div className="bg-white p-1 rounded-md shadow-sm border">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/PromptPay-logo.png" className="h-3 w-auto" alt="pp" />
+                            </div>
                         </div>
                       </div>
-                      <p className="font-bold text-gray-800 text-lg">08X-XXX-XXXX</p>
+                      <p className="text-gray-500 text-sm mb-1">หมายเลขพร้อมเพย์</p>
+                      <p className="font-bold text-gray-800 text-2xl tracking-wider">081-234-5678</p>
+                      <p className="text-gray-400 text-xs mt-1">ชื่อบัญชี: บจก. อีคอมเมิร์ซ ฟูลสแตค</p>
                     </div>
                   </div>
                 )}

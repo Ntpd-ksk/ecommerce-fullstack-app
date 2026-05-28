@@ -98,7 +98,7 @@ function CheckoutContent() {
     const shipping = subtotal > 5000 || checkoutItems.length === 0 ? 0 : 50;
     const total = subtotal + vat + shipping;
 
-    const handleConfirmOrder = async () => {
+    const handleConfirmOrder = () => {
         if (!selectedAddressId) {
             toast.error("กรุณาเลือกที่อยู่จัดส่ง", { icon: <AiOutlineWarning className="text-yellow-500" /> });
             return;
@@ -107,7 +107,10 @@ function CheckoutContent() {
             toast.error("กรุณาเลือกช่องทางการชำระเงิน", { icon: <AiOutlineWarning className="text-yellow-500" /> });
             return;
         }
+        setIsOrdered(true);
+    };
 
+    const handlePayment = async () => {
         setLoading(true);
         try {
             const res = await axios.post("/api/orders", {
@@ -117,26 +120,14 @@ function CheckoutContent() {
             });
 
             if (res.data.order) {
-                setIsOrdered(true);
-                toast.success("ยืนยันคำสั่งซื้อสำเร็จ");
+                toast.success(paymentMethod === "cod" ? "ยืนยันคำสั่งซื้อสำเร็จ!" : "แจ้งชำระเงินสำเร็จ!");
+                setTimeout(() => {
+                    router.push("/profile?tab=orders");
+                }, 1500);
             }
         } catch (error: any) {
             console.error("Checkout error:", error.response?.data || error.message);
             toast.error(error.response?.data?.message || "เกิดข้อผิดพลาดในการสร้างคำสั่งซื้อ");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handlePayment = async () => {
-        setLoading(true);
-        try {
-            toast.success("แจ้งชำระเงินสำเร็จ!");
-            setTimeout(() => {
-                router.push("/profile?tab=orders");
-            }, 1500);
-        } catch (error) {
-            toast.error("เกิดข้อผิดพลาด");
         } finally {
             setLoading(false);
         }
@@ -321,7 +312,7 @@ function CheckoutContent() {
                                             disabled={loading}
                                             className="w-full bg-green-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-green-700 transition-all shadow-lg shadow-green-600/20 active:scale-[0.98] disabled:bg-gray-400"
                                         >
-                                            {loading ? "กำลังดำเนินการ..." : "ชำระเงิน"}
+                                            {loading ? "กำลังดำเนินการ..." : paymentMethod === "cod" ? "ยืนยัน" : "ชำระเงิน"}
                                         </button>
                                     )}
                                 </div>
