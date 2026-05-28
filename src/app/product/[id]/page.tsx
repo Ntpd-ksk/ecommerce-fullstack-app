@@ -9,7 +9,7 @@ import { useParams, useRouter } from "next/navigation";
 import { AiFillStar, AiOutlineShoppingCart, AiOutlineHeart, AiFillHeart, AiOutlineShareAlt } from "react-icons/ai";
 import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import { addToCart } from "@/redux/features/cartSlice";
-import { toggleWishlist } from "@/redux/features/wishlistSlice";
+import { toggleWishlistDb } from "@/redux/features/wishlistSlice";
 import { makeToast } from "@/utils/helper";
 import { useSession } from "next-auth/react";
 import { openAuthModal } from "@/redux/features/authModalSlice";
@@ -106,7 +106,7 @@ const ProductDetail = () => {
             return;
         }
         if (product) {
-            dispatch(toggleWishlist(product));
+            dispatch(toggleWishlistDb(product));
             if (isWishlisted) {
                 makeToast("นำออกจากรายการโปรดแล้ว");
             } else {

@@ -41,6 +41,7 @@ model User {
   accounts      Account[]
   orders        Order[]
   addresses     Address[]
+  wishlist      Wishlist[]
 }
 
 model Product {
@@ -57,18 +58,34 @@ model Product {
   specs         Json?
   imagePath     String
   orderItems    OrderItem[]
+  wishlist      Wishlist[]
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 }
 
-model Order {
-  id        String      @id @default(cuid())
+model Wishlist {
+  id        String   @id @default(cuid())
   userId    String
-  total     Decimal     @db.Decimal(10, 2)
-  status    String      @default("PENDING")
-  items     OrderItem[]
-  user      User        @relation(fields: [userId], references: [id])
-  createdAt DateTime    @default(now())
+  productId String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+}
+
+model Order {
+  id            String      @id @default(cuid())
+  userId        String
+  total         Decimal     @db.Decimal(10, 2)
+  status        String      @default("PENDING") // PENDING, VERIFYING, PAID, SHIPPING, SUCCESS, CANCELLED
+  paymentMethod String      @default("bank")
+  paymentSlip   String?     @db.LongText
+  trackingNumber String?
+  items         OrderItem[]
+  user          User        @relation(fields: [userId], references: [id])
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }
 
 model OrderItem {

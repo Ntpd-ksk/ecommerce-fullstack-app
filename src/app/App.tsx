@@ -8,11 +8,31 @@ import {store} from "@/redux/store"
 import React from 'react'
 // นำเข้า Provider component เพื่อใช้ในการทำให้ store เป็น Global สำหรับ Component ทั้งหมดในแอปพลิเคชัน
 import { Provider } from "react-redux"
+import { useSession } from "next-auth/react"
+import { useAppDispatch } from "@/redux/hook"
+import { fetchWishlist } from "@/redux/features/wishlistSlice"
 
-// ประกาศ Component ที่ชื่อ "App" โดย children คือ Component ที่จะถูก render ภายใต้ Component App
+const AppWrapper = ({ children }: { children: React.ReactNode }) => {
+  const { data: session } = useSession()
+  const dispatch = useAppDispatch()
+
+  React.useEffect(() => {
+    if (session) {
+      dispatch(fetchWishlist())
+    }
+  }, [session, dispatch])
+
+  return <>{children}</>
+}
+
 const App = ({children}: {children: React.ReactNode}) => {
-  // ใช้ Provider component เพื่อให้ทุก Component ในแอปพลิเคชันสามารถเข้าถึง store
-  return <Provider store={store}>{children}</Provider>
+  return (
+    <Provider store={store}>
+      <AppWrapper>
+        {children}
+      </AppWrapper>
+    </Provider>
+  )
 }
 
 export default App

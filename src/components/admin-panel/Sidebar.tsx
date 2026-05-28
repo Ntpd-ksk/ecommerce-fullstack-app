@@ -2,7 +2,7 @@
 
 "use client"
 
-import { MdDashboard, MdManageAccounts, MdOutlineHome } from "react-icons/md"
+import { MdDashboard, MdManageAccounts, MdOutlineHome, MdOutlineReceiptLong, MdPeople } from "react-icons/md"
 import { GrTransaction } from "react-icons/gr"
 import { IoAnalytics, IoSettings } from "react-icons/io5"
 import { RiShoppingCartLine } from "react-icons/ri"
@@ -16,7 +16,12 @@ const menus =[
     href: "/",
   },
   {
-    title: "รายการสินค้าทั้งหมด",
+    title: "แดชบอร์ดสรุปผล",
+    icon: <IoAnalytics />,
+    href: "/admin/dashboard-analytics",
+  },
+  {
+    title: "รายการสินค้า",
     icon: <MdDashboard />,
     href: "/admin/dashboard",
   },
@@ -24,6 +29,16 @@ const menus =[
     title: "เพิ่มสินค้า",
     icon: <RiShoppingCartLine />,
     href: "/admin/products",
+  },
+  {
+    title: "ตรวจสอบสลิป",
+    icon: <MdOutlineReceiptLong />,
+    href: "/admin/slips",
+  },
+  {
+    title: "บัญชีผู้ใช้",
+    icon: <MdPeople />,
+    href: "/admin/accounts",
   },
 ]
 

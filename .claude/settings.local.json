@@ -26,10 +26,16 @@
       "Bash(mv \"src/app/api/product/[id]/ [id]/route.ts\" \"src/app/api/product/[id]/route.ts\")",
       "Bash(rm -rf \"src/app/api/product/[id]/ [id]\")",
       "Bash(npm run *)",
-      "Bash(yarn dev *)"
+      "Bash(yarn dev *)",
+      "Bash(rm -rf \"src/app/api/admin/orders/ [orderId]\")",
+      "Bash(mkdir -p src/app/api/admin/orders/\\\\[orderId\\\\]/status)",
+      "Bash(mv \"src/app/api/admin/orders/ [orderId]\" src/app/api/admin/orders/\\\\[orderId\\\\])",
+      "Bash(rm -rf src/app/api/admin/orders/\\\\[orderId\\\\])"
     ],
     "additionalDirectories": [
-      "D:\\ไฟล์น้องตี๋\\Natapod\\Work\\csc350\\ecommerce-fullstack\\src\\app\\api\\product\\ [id]"
+      "D:\\ไฟล์น้องตี๋\\Natapod\\Work\\csc350\\ecommerce-fullstack\\src\\app\\api\\product\\ [id]",
+      "D:\\ไฟล์น้องตี๋\\Natapod\\Work\\csc350\\ecommerce-fullstack\\src\\app\\api\\admin\\orders\\ [orderId]",
+      "D:\\ไฟล์น้องตี๋\\Natapod\\Work\\csc350\\ecommerce-fullstack\\src\\app\\api\\admin\\orders\\[orderId]\\status"
     ]
   }
 }

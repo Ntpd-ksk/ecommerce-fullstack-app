@@ -9,7 +9,6 @@ import Footer from "@/components/front-end/Footer";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useAppSelector, useAppDispatch } from "@/redux/hook";
-import { removeFromCart } from "@/redux/features/cartSlice";
 
 interface Address {
     id: string;
@@ -34,7 +33,9 @@ interface CartItem {
 export default function CheckoutPage() {
     return (
         <Suspense fallback={<div className="min-h-screen flex items-center justify-center">กำลังโหลด...</div>}>
+            <Navbar />
             <CheckoutContent />
+            <Footer />
         </Suspense>
     );
 }
@@ -45,14 +46,12 @@ function CheckoutContent() {
     const searchParams = useSearchParams();
     const dispatch = useAppDispatch();
 
-    // States
     const [addresses, setAddresses] = useState<Address[]>([]);
     const [selectedAddressId, setSelectedAddressId] = useState<string>("");
     const [paymentMethod, setPaymentMethod] = useState<string>("");
     const [loading, setLoading] = useState(false);
     const [isOrdered, setIsOrdered] = useState(false);
 
-    // Get item from URL if it's "Buy Now"
     const productId = searchParams.get("productId");
     const productName = searchParams.get("name");
     const productPrice = searchParams.get("price");
@@ -67,7 +66,6 @@ function CheckoutContent() {
         quantity: parseInt(productQty)
     } : null;
 
-    // If no buyNowItem, use items from Redux cart
     const cartItems = useAppSelector((state) => state.cartReducer);
     const checkoutItems = buyNowItem ? [buyNowItem] : cartItems;
 
@@ -84,8 +82,6 @@ function CheckoutContent() {
             const res = await axios.get("/api/address");
             const fetchedAddresses = res.data.addresses;
             setAddresses(fetchedAddresses);
-
-            // Auto select default address
             const defaultAddr = fetchedAddresses.find((a: Address) => a.isDefault);
             if (defaultAddr) {
                 setSelectedAddressId(defaultAddr.id);
@@ -99,10 +95,10 @@ function CheckoutContent() {
 
     const subtotal = checkoutItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
     const vat = subtotal * 0.07;
-    const shipping = subtotal > 5000 ? 0 : 50;
+    const shipping = subtotal > 5000 || checkoutItems.length === 0 ? 0 : 50;
     const total = subtotal + vat + shipping;
 
-    const handleConfirmOrder = () => {
+    const handleConfirmOrder = async () => {
         if (!selectedAddressId) {
             toast.error("กรุณาเลือกที่อยู่จัดส่ง", { icon: <AiOutlineWarning className="text-yellow-500" /> });
             return;
@@ -112,28 +108,35 @@ function CheckoutContent() {
             return;
         }
 
-        setIsOrdered(true);
-        toast.success("ยืนยันคำสั่งซื้อสำเร็จ");
+        setLoading(true);
+        try {
+            const res = await axios.post("/api/orders", {
+                items: checkoutItems,
+                total: total,
+                paymentMethod: paymentMethod
+            });
+
+            if (res.data.order) {
+                setIsOrdered(true);
+                toast.success("ยืนยันคำสั่งซื้อสำเร็จ");
+            }
+        } catch (error: any) {
+            console.error("Checkout error:", error.response?.data || error.message);
+            toast.error(error.response?.data?.message || "เกิดข้อผิดพลาดในการสร้างคำสั่งซื้อ");
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handlePayment = async () => {
         setLoading(true);
         try {
-            // Mock payment/order creation
-            // In real app, call API to create order
-            toast.success("ชำระเงินสำเร็จ!");
-
-            // If from cart, clear cart
-            if (!buyNowItem) {
-                // Ideally we'd have a clearCart action
-                checkoutItems.forEach(item => dispatch(removeFromCart(item.id)));
-            }
-
+            toast.success("แจ้งชำระเงินสำเร็จ!");
             setTimeout(() => {
                 router.push("/profile?tab=orders");
-            }, 2000);
+            }, 1500);
         } catch (error) {
-            toast.error("เกิดข้อผิดพลาดในการชำระเงิน");
+            toast.error("เกิดข้อผิดพลาด");
         } finally {
             setLoading(false);
         }
@@ -141,32 +144,24 @@ function CheckoutContent() {
 
     if (checkoutItems.length === 0 && !isOrdered) {
         return (
-            <main>
-                <Navbar />
-                <div className="container mx-auto px-4 py-20 text-center">
-                    <h2 className="text-2xl font-bold mb-4">ไม่มีสินค้าสำหรับการสั่งซื้อ</h2>
-                    <button onClick={() => router.push("/")} className="text-accent hover:underline">กลับไปเลือกซื้อสินค้า</button>
-                </div>
-                <Footer />
-            </main>
+            <div className="container mx-auto px-4 py-20 text-center">
+                <h2 className="text-2xl font-bold mb-4">ไม่มีสินค้าสำหรับการสั่งซื้อ</h2>
+                <button onClick={() => router.push("/")} className="text-accent hover:underline">กลับไปเลือกซื้อสินค้า</button>
+            </div>
         );
     }
 
     const selectedAddress = addresses.find(a => a.id === selectedAddressId);
 
     return (
-        <main className="bg-[#f5f7f9] min-h-screen">
-            <Navbar />
-
+        <div className="bg-[#f5f7f9] min-h-screen pb-12">
             <div className="container mx-auto px-4 py-8">
                 <button onClick={() => router.back()} className="flex items-center gap-2 text-gray-600 hover:text-accent mb-6 transition-colors">
                     <AiOutlineArrowLeft /> กลับ
                 </button>
 
                 <div className="flex flex-col lg:flex-row gap-8">
-                    {/* Left Side: Steps */}
                     <div className="flex-[2] space-y-6">
-                        {/* Step 1: Address */}
                         <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
                             <div className="bg-gray-50 px-6 py-4 border-b flex justify-between items-center">
                                 <h2 className="font-bold text-lg flex items-center gap-3">
@@ -206,7 +201,6 @@ function CheckoutContent() {
                             </div>
                         </div>
 
-                        {/* Step 2: Payment */}
                         <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
                             <div className="bg-gray-50 px-6 py-4 border-b">
                                 <h2 className="font-bold text-lg flex items-center gap-3">
@@ -243,7 +237,6 @@ function CheckoutContent() {
                             </div>
                         </div>
 
-                        {/* Order Confirmation Details (After clicking confirm) */}
                         {isOrdered && (
                             <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-green-200 animate-in fade-in slide-in-from-top-4 duration-500">
                                 <div className="bg-green-50 px-6 py-4 border-b border-green-100 flex items-center gap-3 text-green-700 font-bold">
@@ -269,22 +262,17 @@ function CheckoutContent() {
                                             {paymentMethod === 'promptpay' && '📱 พร้อมเพย์ (PromptPay)'}
                                             {paymentMethod === 'cod' && '🚚 ชำระเงินปลายทาง'}
                                         </p>
-                                        <div className="mt-4 p-4 bg-yellow-50 rounded-lg text-xs text-yellow-800">
-                                            กรุณาตรวจสอบข้อมูลก่อนกดยืนยันการชำระเงิน
-                                        </div>
                                     </div>
                                 </div>
                             </div>
                         )}
                     </div>
 
-                    {/* Right Side: Summary */}
                     <div className="flex-1">
                         <div className="bg-white rounded-xl shadow-md border border-gray-100 sticky top-24 overflow-hidden">
                             <div className="p-6 border-b bg-gray-50">
                                 <h2 className="font-bold text-lg">สรุปรายการสั่งซื้อ</h2>
                             </div>
-
                             <div className="p-6 space-y-4 max-h-[400px] overflow-y-auto">
                                 {checkoutItems.map((item) => (
                                     <div key={item.id} className="flex gap-4 items-center pb-4 border-b last:border-0">
@@ -301,7 +289,6 @@ function CheckoutContent() {
                                     </div>
                                 ))}
                             </div>
-
                             <div className="p-6 bg-gray-50 space-y-3">
                                 <div className="flex justify-between text-sm text-gray-600">
                                     <span>ราคารวมสินค้า</span>
@@ -319,14 +306,14 @@ function CheckoutContent() {
                                     <span className="font-bold text-gray-800">ราคาสุทธิ</span>
                                     <span className="text-2xl font-bold text-accent">฿{total.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
                                 </div>
-
                                 <div className="pt-6">
                                     {!isOrdered ? (
                                         <button
                                             onClick={handleConfirmOrder}
-                                            className="w-full bg-accent text-white py-4 rounded-xl font-bold text-lg hover:bg-[#d41a1a] transition-all shadow-lg shadow-accent/20 active:scale-[0.98]"
+                                            disabled={loading}
+                                            className="w-full bg-accent text-white py-4 rounded-xl font-bold text-lg hover:bg-[#d41a1a] transition-all shadow-lg shadow-accent/20 active:scale-[0.98] disabled:bg-gray-400"
                                         >
-                                            ยืนยันการสั่งซื้อ
+                                            {loading ? "กำลังดำเนินการ..." : "ยืนยันการสั่งซื้อ"}
                                         </button>
                                     ) : (
                                         <button
@@ -338,17 +325,11 @@ function CheckoutContent() {
                                         </button>
                                     )}
                                 </div>
-
-                                <p className="text-[10px] text-center text-gray-400 mt-4">
-                                    การกดยืนยันถือว่าคุณยอมรับ <span className="underline">เงื่อนไขการให้บริการ</span>
-                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <Footer />
-        </main>
+        </div>
     );
 }
