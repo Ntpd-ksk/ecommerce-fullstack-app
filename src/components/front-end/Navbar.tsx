@@ -1,6 +1,6 @@
 // Component Navbar เป็นส่วนหนึ่งของหน้าเว็บที่แสดงเมนูและเครื่องมือต่างๆ ซึ่งมักจะประกอบด้วยโลโก้เว็บไซต์ ช่องค้นหา รายการสินค้าในตะกร้า และลิงก์เข้าสู่ระบบของผู้ใช้
 
-import { useAppSelector } from '@/redux/hook'
+import { useAppSelector, useAppDispatch } from '@/redux/hook'
 import React, { Dispatch, SetStateAction, useState, useRef, useEffect } from 'react'
 import { AiOutlineShoppingCart, AiOutlineUser, AiOutlineHeart } from 'react-icons/ai'
 import { BsSearch } from 'react-icons/bs'
@@ -8,16 +8,18 @@ import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import AuthModal from "./AuthModal";
 import axios from "axios";
+import { openAuthModal, closeAuthModal } from "@/redux/features/authModalSlice";
 
 interface PropsType {
     setShowCart: Dispatch<SetStateAction<boolean>>
 }
 
 const Navbar = ({ setShowCart }: PropsType) => {
+    const dispatch = useAppDispatch();
     const { data: session } = useSession();
     const cartCount = useAppSelector((state) => state.cartReducer.length)
     const wishlistCount = useAppSelector((state) => state.wishlistReducer.length)
-    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+    const isAuthModalOpen = useAppSelector((state) => state.authModalReducer.isOpen)
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [userImage, setUserImage] = useState<string | null>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -49,7 +51,7 @@ const Navbar = ({ setShowCart }: PropsType) => {
 
     const handleProfileClick = () => {
         if (!session) {
-            setIsAuthModalOpen(true);
+            dispatch(openAuthModal());
         } else {
             setIsDropdownOpen(!isDropdownOpen);
         }
@@ -57,7 +59,7 @@ const Navbar = ({ setShowCart }: PropsType) => {
 
     const handleCartClick = () => {
         if (!session) {
-            setIsAuthModalOpen(true);
+            dispatch(openAuthModal());
         } else {
             setShowCart(true);
         }
@@ -106,7 +108,7 @@ const Navbar = ({ setShowCart }: PropsType) => {
                                     )}
 
                                     <Link href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setIsDropdownOpen(false)}>บัญชีของฉัน</Link>
-                                    <Link href="/wishlist" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setIsDropdownOpen(false)}>รายการสินค้าโปรด</Link>
+                                    <Link href="/profile?tab=wishlist" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setIsDropdownOpen(false)}>รายการสินค้าโปรด</Link>
                                     <button onClick={() => signOut()} className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 border-t border-gray-100 mt-1">ออกจากระบบ</button>
                                 </div>
                             )}
@@ -131,7 +133,7 @@ const Navbar = ({ setShowCart }: PropsType) => {
                 <div className='border-b border-gray-200 pt-4' />
             </div>
 
-            <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+            <AuthModal isOpen={isAuthModalOpen} onClose={() => dispatch(closeAuthModal())} />
         </div>
     )
 }

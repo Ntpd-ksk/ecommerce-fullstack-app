@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AiOutlineUser, AiOutlineHome, AiOutlineCamera, AiOutlineEdit, AiOutlineDelete, AiOutlineCheck, AiOutlinePlus, AiOutlineHeart, AiFillHeart, AiOutlineShoppingCart } from "react-icons/ai";
 import Navbar from "@/components/front-end/Navbar";
 import Footer from "@/components/front-end/Footer";
@@ -26,13 +26,22 @@ interface Address {
 }
 
 export default function ProfilePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">กำลังโหลด...</div>}>
+      <ProfileContent />
+    </Suspense>
+  );
+}
+
+function ProfileContent() {
   const { data: session, status, update } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [showCart, setShowCart] = useState(false);
-  const [activeTab, setActiveTab] = useState("info");
+  const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "info");
   const wishlist = useAppSelector((state) => state.wishlistReducer);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -60,6 +69,13 @@ export default function ProfilePage() {
     line: "",
     image: "",
   });
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab && ["info", "address", "wishlist"].includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -302,7 +318,137 @@ export default function ProfilePage() {
                       </button>
                     )}
                   </div>
-                  {/* ... rest of info tab content ... */}
+
+                  <div className="flex flex-col items-center mb-8">
+                    <div className="relative group cursor-pointer" onClick={() => isEditing && fileInputRef.current?.click()}>
+                      <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center text-4xl text-gray-400 overflow-hidden border-4 border-white shadow-md">
+                        {formData.image ? (
+                          <img src={formData.image} alt="profile" className="w-full h-full object-cover" />
+                        ) : (
+                          getInitials(session.user?.email)
+                        )}
+                      </div>
+                      {isEditing && (
+                        <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white">
+                          <AiOutlineCamera size={24} />
+                        </div>
+                      )}
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        className="hidden"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                      />
+                    </div>
+                    {isEditing && <p className="mt-2 text-sm text-gray-500">กดเพื่อเปลี่ยนรูปโปรไฟล์</p>}
+                  </div>
+
+                  {isEditing ? (
+                    <form onSubmit={handleUpdate} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">ชื่อ-นามสกุล</label>
+                        <input
+                          type="text"
+                          className="w-full border border-gray-300 p-2 rounded focus:border-accent outline-none"
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">อีเมล (ไม่สามารถแก้ไขได้)</label>
+                        <input
+                          type="email"
+                          className="w-full border border-gray-200 p-2 rounded bg-gray-50 text-gray-500 cursor-not-allowed outline-none"
+                          value={formData.email}
+                          readOnly
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">เบอร์โทรศัพท์</label>
+                        <input
+                          type="text"
+                          className="w-full border border-gray-300 p-2 rounded focus:border-accent outline-none"
+                          value={formData.phone}
+                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                          placeholder="08X-XXX-XXXX"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">วันเกิด</label>
+                        <input
+                          type="date"
+                          className="w-full border border-gray-300 p-2 rounded focus:border-accent outline-none"
+                          value={formData.birthDate}
+                          onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Facebook</label>
+                        <input
+                          type="text"
+                          className="w-full border border-gray-300 p-2 rounded focus:border-accent outline-none"
+                          value={formData.facebook}
+                          onChange={(e) => setFormData({ ...formData, facebook: e.target.value })}
+                          placeholder="Facebook URL / Name"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Line</label>
+                        <input
+                          type="text"
+                          className="w-full border border-gray-300 p-2 rounded focus:border-accent outline-none"
+                          value={formData.line}
+                          onChange={(e) => setFormData({ ...formData, line: e.target.value })}
+                          placeholder="Line ID"
+                        />
+                      </div>
+                      <div className="md:col-span-2 flex gap-4 pt-4">
+                        <button
+                          type="submit"
+                          disabled={loading}
+                          className="bg-accent text-white px-8 py-2 rounded font-bold hover:opacity-90 disabled:bg-gray-400"
+                        >
+                          {loading ? "กำลังบันทึก..." : "บันทึกข้อมูล"}
+                        </button>
+                        <button
+                          type="button"
+                          disabled={loading}
+                          onClick={() => setIsEditing(false)}
+                          className="border border-gray-300 px-8 py-2 rounded font-bold hover:bg-gray-50 disabled:bg-gray-100"
+                        >
+                          ยกเลิก
+                        </button>
+                      </div>
+                    </form>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12 mt-4">
+                      <div className="border-b pb-2">
+                        <p className="text-sm text-gray-500 mb-1">ชื่อ-นามสกุล</p>
+                        <p className="font-bold">{formData.name || "-"}</p>
+                      </div>
+                      <div className="border-b pb-2">
+                        <p className="text-sm text-gray-500 mb-1">อีเมล</p>
+                        <p className="font-bold text-gray-400">{formData.email}</p>
+                      </div>
+                      <div className="border-b pb-2">
+                        <p className="text-sm text-gray-500 mb-1">เบอร์โทรศัพท์</p>
+                        <p className="font-bold">{formData.phone || "-"}</p>
+                      </div>
+                      <div className="border-b pb-2">
+                        <p className="text-sm text-gray-500 mb-1">วันเกิด</p>
+                        <p className="font-bold">{formData.birthDate || "-"}</p>
+                      </div>
+                      <div className="border-b pb-2">
+                        <p className="text-sm text-gray-500 mb-1">Facebook</p>
+                        <p className="font-bold">{formData.facebook || "-"}</p>
+                      </div>
+                      <div className="border-b pb-2">
+                        <p className="text-sm text-gray-500 mb-1">Line</p>
+                        <p className="font-bold">{formData.line || "-"}</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -317,7 +463,68 @@ export default function ProfilePage() {
                       <AiOutlinePlus /> เพิ่มที่อยู่ใหม่
                     </button>
                   </div>
-                  {/* ... rest of address tab content ... */}
+
+                  {addresses.length === 0 ? (
+                    <div className="border-2 border-dashed border-gray-200 rounded-lg p-12 text-center text-gray-400">
+                      <AiOutlineHome size={48} className="mx-auto mb-4" />
+                      <p>คุณยังไม่มีข้อมูลที่อยู่</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {addresses.map((address) => (
+                        <div
+                          key={address.id}
+                          className={`border rounded-lg p-6 relative transition-all ${
+                            address.isDefault ? "border-accent ring-1 ring-accent" : "border-gray-200 hover:border-gray-300"
+                          }`}
+                        >
+                          <div className="flex justify-between items-start mb-4">
+                            <div>
+                              <div className="flex items-center gap-3 mb-1">
+                                <p className="font-bold text-lg">{address.name}</p>
+                                {address.isDefault && (
+                                  <span className="bg-accent/10 text-accent text-xs px-2 py-0.5 rounded border border-accent/20">
+                                    ที่อยู่เริ่มต้น
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-gray-600">{address.phone}</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => openEditAddress(address)}
+                                className="p-2 text-gray-400 hover:text-accent hover:bg-gray-50 rounded-full transition-colors"
+                                title="แก้ไข"
+                              >
+                                <AiOutlineEdit size={20} />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteAddress(address.id)}
+                                className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                                title="ลบ"
+                              >
+                                <AiOutlineDelete size={20} />
+                              </button>
+                            </div>
+                          </div>
+                          <div className="text-gray-600 space-y-1">
+                            <p>{address.address}</p>
+                            <p>
+                              {address.subDistrict}, {address.district}, {address.province}, {address.postalCode}
+                            </p>
+                          </div>
+                          {!address.isDefault && (
+                            <button
+                              onClick={() => handleSetDefaultAddress(address.id)}
+                              className="mt-4 text-sm text-accent hover:underline flex items-center gap-1 font-medium"
+                            >
+                              ตั้งเป็นที่อยู่เริ่มต้น
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 

@@ -5,6 +5,9 @@ import { useAppDispatch } from "@/redux/hook";
 import { addToCart } from "@/redux/features/cartSlice";
 import { makeToast } from "@/utils/helper";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { openAuthModal } from "@/redux/features/authModalSlice";
 
 interface propsType {
     id: string;
@@ -17,10 +20,18 @@ interface propsType {
 
 const ProductCard = ({ id, img, category, title, price, discountPrice }: propsType) => {
     const dispatch = useAppDispatch();
+    const { data: session } = useSession();
+    const router = useRouter();
 
     const addProductToCart = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
+
+        if (!session) {
+            makeToast("กรุณาเข้าสู่ระบบก่อนเพิ่มสินค้าลงตะกร้า");
+            dispatch(openAuthModal());
+            return;
+        }
 
         // Use discountPrice if available for cart, otherwise use regular price
         const finalPrice = discountPrice || price;

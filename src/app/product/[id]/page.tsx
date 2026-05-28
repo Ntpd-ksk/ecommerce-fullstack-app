@@ -11,6 +11,8 @@ import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import { addToCart } from "@/redux/features/cartSlice";
 import { toggleWishlist } from "@/redux/features/wishlistSlice";
 import { makeToast } from "@/utils/helper";
+import { useSession } from "next-auth/react";
+import { openAuthModal } from "@/redux/features/authModalSlice";
 
 interface IProduct {
     id: string;
@@ -28,6 +30,7 @@ interface IProduct {
 
 const ProductDetail = () => {
     const { id } = useParams();
+    const { data: session } = useSession();
     const [product, setProduct] = useState<IProduct | null>(null);
     const [loading, setLoading] = useState(true);
     const [showCart, setShowCart] = useState(false);
@@ -53,6 +56,11 @@ const ProductDetail = () => {
     }, [id]);
 
     const handleAddToCart = () => {
+        if (!session) {
+            makeToast("กรุณาเข้าสู่ระบบก่อนเพิ่มสินค้าลงตะกร้า");
+            dispatch(openAuthModal());
+            return;
+        }
         if (product) {
             const payload = {
                 id: product.id,
@@ -66,6 +74,25 @@ const ProductDetail = () => {
         }
     };
 
+    const handleBuyNow = () => {
+        if (!session) {
+            makeToast("กรุณาเข้าสู่ระบบก่อนสั่งซื้อสินค้า");
+            dispatch(openAuthModal());
+            return;
+        }
+        if (product) {
+            const payload = {
+                id: product.id,
+                img: product.imagePath,
+                title: product.name,
+                price: parseFloat(product.price),
+                quantity: quantity,
+            };
+            dispatch(addToCart(payload));
+            setShowCart(true);
+        }
+    };
+
     const handleShare = () => {
         const url = window.location.href;
         navigator.clipboard.writeText(url);
@@ -73,6 +100,11 @@ const ProductDetail = () => {
     };
 
     const handleToggleWishlist = () => {
+        if (!session) {
+            makeToast("กรุณาเข้าสู่ระบบก่อนเพิ่มสินค้าในรายการโปรด");
+            dispatch(openAuthModal());
+            return;
+        }
         if (product) {
             dispatch(toggleWishlist(product));
             if (isWishlisted) {
@@ -189,7 +221,10 @@ const ProductDetail = () => {
                                 <AiOutlineShoppingCart size={20} />
                                 เพิ่มในตะกร้า
                             </button>
-                            <button className="flex-1 bg-accent text-white font-bold py-3 rounded-md hover:bg-[#d41a1a] transition-all">
+                            <button
+                                onClick={handleBuyNow}
+                                className="flex-1 bg-accent text-white font-bold py-3 rounded-md hover:bg-[#d41a1a] transition-all"
+                            >
                                 ซื้อเลย
                             </button>
                         </div>

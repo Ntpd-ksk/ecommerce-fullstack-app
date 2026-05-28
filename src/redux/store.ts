@@ -5,12 +5,14 @@ import cartReducer from "./features/cartSlice"
 import LoadingReducer from "./features/loadingSlice"
 import productReducer from "./features/productSlice"
 import wishlistReducer from "./features/wishlistSlice"
+import authModalReducer from "./features/authModalSlice"
 export const store = configureStore({
     reducer: {
         cartReducer,
         productReducer,
         LoadingReducer,
         wishlistReducer,
+        authModalReducer,
     },
     devTools: process.env.NODE_ENV !== "production",
 })

@@ -9,7 +9,8 @@ import Sidebar from '@/components/admin-panel/Sidebar'
 import { useAppSelector } from '@/redux/hook'
 // นำเข้า hook useSession จาก Next.js สำหรับการจัดการเซสชันของผู้ใช้
 import { useSession } from 'next-auth/react'
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 // ประกาศ functional component ชื่อ layout ซึ่งเป็นเลเอาท์หลักสำหรับหน้าแอดมิน รับค่า children เป็น prop
 const layout = ({children}: {children: React.ReactNode}) => {
@@ -17,11 +18,28 @@ const layout = ({children}: {children: React.ReactNode}) => {
   // ใช้ useAppSelector เพื่อเลือกค่า isLoading จาก store ซึ่งเป็นสถานะของการโหลดข้อมูล
   const isLoading = useAppSelector(store => store.LoadingReducer)
   // ใช้ useSession เพื่อเรียกใช้ข้อมูลเซสชันของผู้ใช้
-  const {data: session} = useSession()
+  const {data: session, status} = useSession()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (status === 'authenticated' && session?.user?.role !== 'ADMIN') {
+      router.push('/')
+    }
+  }, [session, status, router])
+
+  // ถ้ากำลังโหลดเซสชัน ให้แสดง Loader หรือว่างไว้ก่อน
+  if (status === 'loading') {
+    return <div className="grid place-items-center h-screen"><Loader /></div>
+  }
 
   // ถ้าไม่มีเซสชันของผู้ใช้จะทำการแสดงหน้า Login แทน
   if(!session?.user){
     return <Login />
+  }
+
+  // ถ้าไม่ใช่ ADMIN ไม่ให้เห็นเนื้อหา (จะถูก redirect โดย useEffect)
+  if (session.user.role !== 'ADMIN') {
+    return null
   }
 
   return <div className="flex">
