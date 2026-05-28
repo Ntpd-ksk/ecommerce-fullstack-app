@@ -2,6 +2,7 @@
 import { setLoading } from '@/redux/features/loadingSlice'
 import { useAppDispatch } from '@/redux/hook'
 import axios from 'axios'
+import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 
 interface IUser {
@@ -18,6 +19,7 @@ interface IUser {
 const AccountsPage = () => {
   const [users, setUsers] = useState<IUser[]>([])
   const dispatch = useAppDispatch()
+  const router = useRouter()
 
   useEffect(() => {
     dispatch(setLoading(true))
@@ -42,6 +44,7 @@ const AccountsPage = () => {
               <th className="p-2">เบอร์โทรศัพท์</th>
               <th className="p-2">บทบาท</th>
               <th className="p-2">จำนวนคำสั่งซื้อ</th>
+              <th className="p-2">การจัดการ</th>
             </tr>
           </thead>
           <tbody>
@@ -57,6 +60,14 @@ const AccountsPage = () => {
                   </span>
                 </td>
                 <td className="p-2">{user._count.orders}</td>
+                <td className="p-2">
+                  <button
+                    onClick={() => router.push(`/admin/accounts/${user.id}`)}
+                    className="bg-accent text-white px-3 py-1 rounded-md text-sm hover:opacity-90 transition-opacity"
+                  >
+                    ดู
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
