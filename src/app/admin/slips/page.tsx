@@ -4,6 +4,7 @@ import { useAppDispatch } from '@/redux/hook'
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
+import { RiDeleteBin5Line } from "react-icons/ri"
 
 interface IOrderItem {
   id: string
@@ -51,13 +52,24 @@ const OrderManagementPage = () => {
     fetchOrders()
   }, [filterStatus])
 
+  const statusLabel: Record<string, string> = {
+    PENDING: "รอชำระเงิน",
+    VERIFYING: "รอตรวจสอบสลิป",
+    PAID: "ชำระเงินแล้ว",
+    PROCESSING: "กำลังดำเนินการ",
+    SHIPPING: "กำลังจัดส่ง",
+    SUCCESS: "สำเร็จ",
+    CANCELLED: "ยกเลิก",
+  }
+
   const updateStatus = (orderId: string, status: string) => {
-    if (!confirm(`ต้องการเปลี่ยนสถานะเป็น ${status} หรือไม่?`)) return
+    const label = statusLabel[status] || status
+    if (!confirm(`ต้องการเปลี่ยนสถานะเป็น ${label} หรือไม่?`)) return
 
     dispatch(setLoading(true))
     axios.patch(`/api/admin/orders/${orderId}/status`, { status })
       .then(() => {
-        toast.success(`อัปเดตสถานะเป็น ${status} เรียบร้อยแล้ว`)
+        toast.success(`อัปเดตสถานะเป็น ${label} เรียบร้อยแล้ว`)
         fetchOrders()
       })
       .catch(err => {
@@ -86,11 +98,12 @@ const OrderManagementPage = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "PENDING": return "bg-gray-100 text-gray-600"
-      case "VERIFYING": return "bg-yellow-100 text-yellow-600"
-      case "PAID": return "bg-blue-100 text-blue-600"
-      case "SHIPPING": return "bg-purple-100 text-purple-600"
-      case "SUCCESS": return "bg-green-100 text-green-600"
-      case "CANCELLED": return "bg-red-100 text-red-600"
+      case "VERIFYING": return "bg-orange-50 text-orange-600 border border-orange-100"
+      case "PAID": return "bg-blue-50 text-blue-600 border border-blue-100"
+      case "PROCESSING": return "bg-yellow-50 text-yellow-600 border border-yellow-100"
+      case "SHIPPING": return "bg-purple-50 text-purple-600 border border-purple-100"
+      case "SUCCESS": return "bg-green-50 text-green-600 border border-green-100"
+      case "CANCELLED": return "bg-red-50 text-red-600 border border-red-100"
       default: return "bg-gray-100 text-gray-600"
     }
   }
@@ -110,12 +123,9 @@ const OrderManagementPage = () => {
             className="bg-gray-50 border-none rounded-lg px-4 py-2 text-sm font-bold outline-none cursor-pointer hover:bg-gray-100 transition-colors"
           >
             <option value="">คำสั่งซื้อทั้งหมด</option>
-            <option value="PENDING">รอชำระเงิน</option>
-            <option value="VERIFYING">รอตรวจสอบสลิป</option>
-            <option value="PAID">ชำระเงินแล้ว</option>
-            <option value="SHIPPING">กำลังจัดส่ง</option>
-            <option value="SUCCESS">สำเร็จ</option>
-            <option value="CANCELLED">ยกเลิก</option>
+            {Object.entries(statusLabel).map(([value, label]) => (
+              <option key={value} value={value}>{label}</option>
+            ))}
           </select>
         </div>
       </div>
@@ -173,38 +183,36 @@ const OrderManagementPage = () => {
                   </td>
                   <td className="px-6 py-4">
                     <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tight ${getStatusColor(order.status)}`}>
-                      {order.status}
+                      {statusLabel[order.status] || order.status}
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <div className="flex flex-col gap-2 items-end">
-                      <div className="flex gap-2">
+                    <div className="flex gap-4 items-center justify-end">
+                      <div className="flex items-center gap-2 bg-gray-50 p-1.5 rounded-xl border border-gray-100">
+                        <select
+                          value={order.status}
+                          onChange={(e) => updateStatus(order.id, e.target.value)}
+                          className="bg-transparent px-2 py-1 text-[10px] font-bold outline-none cursor-pointer transition-all"
+                        >
+                          {Object.entries(statusLabel).map(([value, label]) => (
+                            <option key={value} value={value}>{label}</option>
+                          ))}
+                        </select>
                         {order.status === "VERIFYING" && (
                           <button
                             onClick={() => updateStatus(order.id, "PAID")}
-                            className="bg-[#ef4444] text-white px-3 py-1.5 rounded-lg text-[10px] font-bold hover:bg-red-600 shadow-sm shadow-red-600/10 transition-all"
+                            className="bg-[#ef4444] text-white px-3 py-1 rounded-lg text-[9px] font-bold hover:bg-red-600 shadow-sm shadow-red-600/10 transition-all whitespace-nowrap"
                           >
                             ยืนยันสลิป
                           </button>
                         )}
-                        <select
-                          value={order.status}
-                          onChange={(e) => updateStatus(order.id, e.target.value)}
-                          className="bg-white border border-gray-200 rounded-lg px-2 py-1.5 text-[10px] font-bold outline-none cursor-pointer hover:border-[#ef4444] transition-all"
-                        >
-                          <option value="PENDING">PENDING</option>
-                          <option value="VERIFYING">VERIFYING</option>
-                          <option value="PAID">PAID</option>
-                          <option value="SHIPPING">SHIPPING</option>
-                          <option value="SUCCESS">SUCCESS</option>
-                          <option value="CANCELLED">CANCELLED</option>
-                        </select>
                       </div>
                       <button
                         onClick={() => deleteOrder(order.id)}
-                        className="text-gray-400 hover:text-red-600 text-[10px] font-bold transition-colors uppercase tracking-widest"
+                        className="p-2.5 text-red-500 hover:bg-red-50 rounded-xl transition-colors"
+                        title="ลบคำสั่งซื้อ"
                       >
-                        [ DELETE ]
+                        <RiDeleteBin5Line size={20} />
                       </button>
                     </div>
                   </td>

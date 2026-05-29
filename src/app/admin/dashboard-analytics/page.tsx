@@ -3,6 +3,7 @@ import { setLoading } from '@/redux/features/loadingSlice'
 import { useAppDispatch } from '@/redux/hook'
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 interface IOrderStat {
   status: string
@@ -23,6 +24,7 @@ import { MdPeople, MdOutlineReceiptLong, MdAttachMoney, MdShoppingCart } from "r
 const DashboardAnalytics = () => {
   const [data, setData] = useState<IAnalytics | null>(null)
   const dispatch = useAppDispatch()
+  const router = useRouter()
 
   useEffect(() => {
     dispatch(setLoading(true))
@@ -37,6 +39,7 @@ const DashboardAnalytics = () => {
     PENDING: "bg-gray-100 text-gray-600",
     VERIFYING: "bg-orange-50 text-orange-600 border border-orange-100",
     PAID: "bg-blue-50 text-blue-600 border border-blue-100",
+    PROCESSING: "bg-yellow-50 text-yellow-600 border border-yellow-100",
     SHIPPING: "bg-purple-50 text-purple-600 border border-purple-100",
     SUCCESS: "bg-green-50 text-green-600 border border-green-100",
     CANCELLED: "bg-red-50 text-red-600 border border-red-100",
@@ -46,6 +49,7 @@ const DashboardAnalytics = () => {
     PENDING: "รอชำระเงิน",
     VERIFYING: "กำลังตรวจสอบ",
     PAID: "ชำระแล้ว",
+    PROCESSING: "กำลังดำเนินการ",
     SHIPPING: "กำลังจัดส่ง",
     SUCCESS: "สำเร็จ",
     CANCELLED: "ยกเลิก",
@@ -128,7 +132,12 @@ const DashboardAnalytics = () => {
           <div className="flex-1 flex flex-col justify-center items-center p-8 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
             <span className="text-gray-500 font-medium">สินค้าทั้งหมดในระบบ</span>
             <span className="text-6xl font-black text-gray-900 mt-2">{data.totalProducts}</span>
-            <button className="mt-6 text-[#ef4444] font-bold text-sm hover:underline">จัดการสินค้าทั้งหมด →</button>
+            <button
+              onClick={() => router.push('/admin/dashboard')}
+              className="mt-6 text-[#ef4444] font-bold text-sm hover:underline"
+            >
+              จัดการสินค้าทั้งหมด →
+            </button>
           </div>
         </div>
       </div>

@@ -44,8 +44,8 @@ const menus =[
 
 const Sidebar = () => {
   const pathName = usePathname()
-  
-  return <div className="bg-[#0a0a0a] w-[300px] min-h-screen p-6 shrink-0 border-r border-white/5 text-gray-400">
+
+  return <div className="bg-[#0a0a0a] w-[300px] h-screen sticky top-0 p-6 shrink-0 border-r border-white/5 text-gray-400">
     <div className="flex items-center gap-4 mb-10">
       <img className="size-10 rounded-lg object-cover" src="/logo.jpg" alt="logo" />
       <h2 className="text-[22px] font-bold text-white tracking-tighter italic">NATAPOD <span className="text-[#ef4444]">SHOP</span></h2>

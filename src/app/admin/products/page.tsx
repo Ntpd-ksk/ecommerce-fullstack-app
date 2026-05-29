@@ -8,7 +8,7 @@ import React from 'react'
 // ประกาศ functional component ชื่อ Products ซึ่งเป็นหน้าที่แสดงฟอร์มสำหรับจัดการสินค้า
 const Products = () => {
   return (
-    <div className='max-w-4xl mx-auto space-y-6'>
+    <div className='w-full space-y-6'>
         <div className="flex justify-between items-center mb-2">
           <div>
             <h2 className='text-3xl font-bold text-gray-900 tracking-tight'>เพิ่มสินค้าใหม่</h2>
