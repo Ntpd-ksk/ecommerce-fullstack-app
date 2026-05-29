@@ -10,7 +10,7 @@ import axios from "axios";
 import { openAuthModal, closeAuthModal } from "@/redux/features/authModalSlice";
 
 interface PropsType {
-    setShowCart: Dispatch<SetStateAction<boolean>>;
+    setShowCart?: Dispatch<SetStateAction<boolean>>;
     setSearchQuery?: Dispatch<SetStateAction<string>>;
     scrollToProducts?: () => void;
 }
@@ -95,7 +95,7 @@ const Navbar = ({ setShowCart, setSearchQuery, scrollToProducts }: PropsType) =>
         if (!session) {
             dispatch(openAuthModal());
         } else {
-            setShowCart(true);
+            setShowCart && setShowCart(true);
         }
     };
 

@@ -22,6 +22,7 @@ interface IProduct {
     description: string;
     price: string;
     discountPrice: string;
+    category: string;
     warranty: string;
     tags: string | string[];
     specs: any;
