@@ -219,8 +219,11 @@ async function main() {
         warranty: product.warranty,
         tags: product.tags,
         specs: product.specs,
-        imagePath: product.image,
         stock: 10,
+        images: {
+          deleteMany: {},
+          create: [{ url: product.image }]
+        }
       },
       create: {
         name: product.name,
@@ -232,8 +235,10 @@ async function main() {
         warranty: product.warranty,
         tags: product.tags,
         specs: product.specs,
-        imagePath: product.image,
         stock: 10,
+        images: {
+          create: [{ url: product.image }]
+        }
       },
     });
   }

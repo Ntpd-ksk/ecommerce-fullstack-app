@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation'
 
 export interface IProduct {
   id: string
-  imagePath: string
+  images: { url: string }[]
   name: string
   brand: string
   sku: string

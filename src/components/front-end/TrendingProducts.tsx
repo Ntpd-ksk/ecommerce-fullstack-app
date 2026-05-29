@@ -5,7 +5,7 @@ import axios from "axios"
 
 interface IProduct {
   id: string
-  imagePath: string
+  images: { url: string }[]
   name: string
   brand: string
   price: number
@@ -79,7 +79,7 @@ const TrendingProducts = ({ searchQuery, filterType, setFilterType }: PropsType)
             <ProductCard
               key={item.id}
               id={item.id}
-              img={item.imagePath}
+              img={item.images && item.images.length > 0 ? item.images[0].url : "/placeholder.jpg"}
               title={item.name}
               price={item.price}
               discountPrice={item.discountPrice}

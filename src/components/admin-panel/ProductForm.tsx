@@ -4,11 +4,10 @@ import { useAppDispatch } from '@/redux/hook';
 import { makeToast } from '@/utils/helper';
 import axios from 'axios';
 import Image from "next/image"
-import React, { FormEvent, useState } from 'react'
-import { MdClose } from "react-icons/md"
+import React, { FormEvent, useState, ChangeEvent } from 'react'
+import { MdClose, MdCloudUpload } from "react-icons/md"
 
 interface IPayload {
-    imgSrc: null | string;
     name: string;
     brand: string;
     category: string;
@@ -24,7 +23,6 @@ interface ISpec {
 
 const ProductForm = () => {
     const [payload, setPayload] = useState<IPayload>({
-        imgSrc: null,
         name: "",
         brand: "",
         category: "",
@@ -33,12 +31,34 @@ const ProductForm = () => {
         description: "",
     })
     const [specs, setSpecs] = useState<ISpec[]>([{ key: "", value: "" }])
-
+    const [files, setFiles] = useState<File[]>([])
+    const [previews, setPreviews] = useState<string[]>([])
     const [uploading, setUploading] = useState(false)
     const dispatch = useAppDispatch()
 
-    const removeImage = () => {
-        setPayload({ ...payload, imgSrc: null })
+    const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const selectedFiles = e.target.files
+        if (!selectedFiles) return
+
+        const newFiles = Array.from(selectedFiles)
+        setFiles(prev => [...prev, ...newFiles])
+
+        const newPreviews = newFiles.map(file => URL.createObjectURL(file))
+        setPreviews(prev => [...prev, ...newPreviews])
+    }
+
+    const removeImage = (index: number) => {
+        const newFiles = [...files]
+        const newPreviews = [...previews]
+
+        // Revoke URL to prevent memory leak
+        URL.revokeObjectURL(newPreviews[index])
+
+        newFiles.splice(index, 1)
+        newPreviews.splice(index, 1)
+
+        setFiles(newFiles)
+        setPreviews(newPreviews)
     }
 
     const addSpec = () => setSpecs([...specs, { key: "", value: "" }])
@@ -49,50 +69,48 @@ const ProductForm = () => {
         setSpecs(newSpecs)
     }
 
-    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
-        if (!file) return
-
-        setUploading(true)
-        const formData = new FormData()
-        formData.append('file', file)
-
-        try {
-            const res = await axios.post('/api/upload', formData)
-            setPayload({ ...payload, imgSrc: res.data.url })
-            makeToast("อัปโหลดรูปภาพสำเร็จ")
-        } catch (err: any) {
-            console.error(err)
-            alert(err.response?.data?.error || "อัปโหลดล้มเหลว")
-        } finally {
-            setUploading(false)
-        }
-    }
-
-    const handleSubmit = (e: FormEvent) => {
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault()
-        if (!payload.imgSrc) {
-            alert("กรุณาอัปโหลดรูปภาพก่อน")
+        if (files.length === 0) {
+            alert("กรุณาอัปโหลดรูปภาพอย่างน้อย 1 รูป")
             return
         }
 
         dispatch(setLoading(true))
+        setUploading(true)
 
-        // Convert specs array to object
-        const specsObj = specs.reduce((acc, curr) => {
-            if (curr.key.trim()) acc[curr.key] = curr.value
-            return acc
-        }, {} as any)
+        try {
+            const formData = new FormData()
 
-        const finalPayload = {
-            ...payload,
-            specs: specsObj
-        }
+            // Add basic fields
+            formData.append("name", payload.name)
+            formData.append("brand", payload.brand)
+            formData.append("category", payload.category)
+            formData.append("price", payload.price)
+            formData.append("discountPrice", payload.discountPrice)
+            formData.append("description", payload.description)
 
-        axios.post("/api/add_product", finalPayload).then(res => {
+            // Add specs as JSON string
+            const specsObj = specs.reduce((acc, curr) => {
+                if (curr.key.trim()) acc[curr.key] = curr.value
+                return acc
+            }, {} as any)
+            formData.append("specs", JSON.stringify(specsObj))
+            formData.append("tags", JSON.stringify([])) // Default tags
+
+            // Add multiple files
+            files.forEach(file => {
+                formData.append("files", file)
+            })
+
+            await axios.post("/api/add_product", formData, {
+                headers: { "Content-Type": "multipart/form-data" }
+            })
+
             makeToast("เพิ่มสินค้าสำเร็จ")
+
+            // Reset form
             setPayload({
-                imgSrc: null,
                 name: "",
                 brand: "",
                 category: "",
@@ -101,55 +119,56 @@ const ProductForm = () => {
                 description: "",
             })
             setSpecs([{ key: "", value: "" }])
-        }).catch(err => console.log(err)
-        ).finally(() => dispatch(setLoading(false)))
+            setFiles([])
+            previews.forEach(url => URL.revokeObjectURL(url))
+            setPreviews([])
+
+        } catch (err: any) {
+            console.error(err)
+            alert(err.response?.data?.msg || "Something went wrong")
+        } finally {
+            setUploading(false)
+            dispatch(setLoading(false))
+        }
     }
 
     return (
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-            <div className="relative w-full h-[300px] bg-gray-100 rounded-md overflow-hidden border border-gray-300 flex items-center justify-center">
-                {payload.imgSrc ? (
-                    <Image
-                        className="object-contain"
-                        src={payload.imgSrc}
-                        fill
-                        alt="product_image"
-                    />
-                ) : (
-                    <div className="text-gray-400 text-sm font-medium">กรุณาอัปโหลดรูปภาพสินค้า</div>
-                )}
-            </div>
-
+            {/* Image Preview Area */}
             <div className="flex flex-col gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <label className="block font-bold text-gray-700">รูปภาพสินค้า</label>
+                <label className="block font-bold text-gray-700">รูปภาพสินค้า (อัปโหลดได้หลายรูป)</label>
 
-                {payload.imgSrc && (
-                    <div className="flex items-center gap-3 bg-white p-2 rounded-lg border border-gray-200 mb-2">
-                        <div className="relative size-12 shrink-0">
-                            <Image src={payload.imgSrc} fill className="object-cover rounded-md" alt="preview" />
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-2">
+                    {previews.map((url, index) => (
+                        <div key={index} className="relative aspect-square bg-white rounded-lg border border-gray-200 overflow-hidden group">
+                            <Image src={url} fill className="object-cover" alt={`preview-${index}`} />
+                            <button
+                                type="button"
+                                onClick={() => removeImage(index)}
+                                className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                                <MdClose size={16} />
+                            </button>
+                            <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-[10px] text-center py-0.5">
+                                {index === 0 ? "รูปหลัก" : `รูปที่ ${index + 1}`}
+                            </div>
                         </div>
-                        <div className="flex-1 truncate text-xs text-gray-500 font-medium">
-                            {payload.imgSrc.split('/').pop()}
-                        </div>
-                        <button
-                            type="button"
-                            onClick={removeImage}
-                            className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                            title="ลบรูปภาพ"
-                        >
-                            <MdClose size={18} />
-                        </button>
-                    </div>
-                )}
+                    ))}
 
-                <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    disabled={uploading}
-                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#ef4444] file:text-white hover:file:bg-red-600 cursor-pointer"
-                />
-                {uploading && <p className="text-xs text-[#ef4444] animate-pulse">กำลังอัปโหลด...</p>}
+                    <label className="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-[#ef4444] hover:bg-red-50 transition-all text-gray-400 hover:text-[#ef4444]">
+                        <MdCloudUpload size={30} />
+                        <span className="text-[10px] font-bold">เพิ่มรูปภาพ</span>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={handleImageChange}
+                            className="hidden"
+                        />
+                    </label>
+                </div>
+
+                {uploading && <p className="text-xs text-[#ef4444] animate-pulse">กำลังดำเนินการ...</p>}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

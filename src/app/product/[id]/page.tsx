@@ -6,7 +6,7 @@ import Cart from "@/components/front-end/Cart";
 import Footer from "@/components/front-end/Footer";
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
-import { AiFillStar, AiOutlineShoppingCart, AiOutlineHeart, AiFillHeart, AiOutlineShareAlt } from "react-icons/ai";
+import { AiOutlineShoppingCart, AiOutlineHeart, AiFillHeart, AiOutlineShareAlt } from "react-icons/ai";
 import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import { addToCart } from "@/redux/features/cartSlice";
 import { toggleWishlistDb } from "@/redux/features/wishlistSlice";
@@ -26,7 +26,7 @@ interface IProduct {
     warranty: string;
     tags: string | string[];
     specs: any;
-    imagePath: string;
+    images: { url: string }[];
 }
 
 const ProductDetail = () => {
@@ -37,9 +37,11 @@ const ProductDetail = () => {
     const [loading, setLoading] = useState(true);
     const [showCart, setShowCart] = useState(false);
     const [quantity, setQuantity] = useState(1);
+    const [selectedImage, setSelectedImage] = useState(0);
     const dispatch = useAppDispatch();
     const wishlist = useAppSelector((state) => state.wishlistReducer);
     const cartItems = useAppSelector((state) => state.cartReducer);
+
     const isWishlisted = product ? wishlist.some((item: any) => item.id === product.id) : false;
     const cartItem = product ? cartItems.find((item: any) => item.id === product.id) : null;
 
@@ -63,10 +65,10 @@ const ProductDetail = () => {
             dispatch(openAuthModal());
             return;
         }
-        if (product) {
+        if (product && product.images.length > 0) {
             const payload = {
                 id: product.id,
-                img: product.imagePath,
+                img: product.images[0].url,
                 title: product.name,
                 price: parseFloat(product.price),
                 quantity: quantity,
@@ -82,12 +84,12 @@ const ProductDetail = () => {
             dispatch(openAuthModal());
             return;
         }
-        if (product) {
+        if (product && product.images.length > 0) {
             const params = new URLSearchParams({
                 productId: product.id,
                 name: product.name,
                 price: product.discountPrice || product.price,
-                img: product.imagePath,
+                img: product.images[0].url,
                 qty: quantity.toString(),
             });
             router.push(`/checkout?${params.toString()}`);
@@ -128,7 +130,6 @@ const ProductDetail = () => {
         return <div className="text-center py-20">ไม่พบสินค้า</div>;
     }
 
-    const tagsArray = typeof product.tags === 'string' ? JSON.parse(product.tags) : product.tags;
     const specsObj = typeof product.specs === 'string' ? JSON.parse(product.specs) : product.specs;
 
     return (
@@ -139,13 +140,36 @@ const ProductDetail = () => {
             <div className="container mx-auto px-4 py-8">
                 {/* Product Section */}
                 <div className="flex flex-col lg:flex-row gap-8 bg-white p-6 rounded-lg shadow-sm">
-                    {/* Left: Image */}
-                    <div className="flex-1 border border-gray-100 rounded-xl overflow-hidden bg-[#f9f9f9] flex items-center justify-center min-h-[400px]">
-                        <img
-                            src={product.imagePath}
-                            alt={product.name}
-                            className="max-w-full h-auto object-contain hover:scale-105 transition-transform duration-300"
-                        />
+
+                    {/* Left: Image Gallery */}
+                    <div className="flex-1 flex flex-col gap-4">
+                        <div className="border border-gray-100 rounded-xl overflow-hidden bg-[#f9f9f9] flex items-center justify-center min-h-[400px] relative">
+                            {product.images.length > 0 ? (
+                                <img
+                                    src={product.images[selectedImage].url}
+                                    alt={product.name}
+                                    className="max-w-full h-auto object-contain transition-all duration-500 ease-in-out transform hover:scale-105"
+                                />
+                            ) : (
+                                <div className="text-gray-400">ไม่มีรูปภาพสินค้า</div>
+                            )}
+                        </div>
+
+                        {/* Thumbnails */}
+                        <div className="flex gap-2 overflow-x-auto pb-2">
+                            {product.images.map((img, index) => (
+                                <div
+                                    key={index}
+                                    onMouseEnter={() => setSelectedImage(index)}
+                                    onClick={() => setSelectedImage(index)}
+                                    className={`relative w-20 h-20 shrink-0 border-2 rounded-lg cursor-pointer overflow-hidden transition-all ${
+                                        selectedImage === index ? "border-accent" : "border-gray-100 hover:border-gray-300"
+                                    }`}
+                                >
+                                    <img src={img.url} alt={`thumbnail-${index}`} className="w-full h-full object-cover" />
+                                </div>
+                            ))}
+                        </div>
                     </div>
 
                     {/* Right: Info */}
@@ -163,7 +187,7 @@ const ProductDetail = () => {
                         </div>
 
                         {product.description && (
-                            <div className="text-gray-600 text-sm mt-2 line-clamp-3">
+                            <div className="text-gray-600 text-sm mt-2">
                                 {product.description}
                             </div>
                         )}
@@ -261,38 +285,6 @@ const ProductDetail = () => {
                                 )}
                             </tbody>
                         </table>
-                    </div>
-                </div>
-
-                {/* Footer Info Icons (Optional like in the image) */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-                    <div className="flex items-center gap-3 p-4 border border-gray-100 rounded-lg">
-                        <div className="bg-gray-100 p-2 rounded-full">🚚</div>
-                        <div className="text-xs">
-                            <p className="font-bold">ส่งฟรีทั่วไทย</p>
-                            <p className="text-gray-500">เมื่อช้อปครบ 5,000 ขึ้นไป</p>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-3 p-4 border border-gray-100 rounded-lg">
-                        <div className="bg-gray-100 p-2 rounded-full">🔄</div>
-                        <div className="text-xs">
-                            <p className="font-bold">เปลี่ยนคืนสินค้าง่าย</p>
-                            <p className="text-gray-500">เปลี่ยนใหม่ภายใน 7 วัน</p>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-3 p-4 border border-gray-100 rounded-lg">
-                        <div className="bg-gray-100 p-2 rounded-full">⏰</div>
-                        <div className="text-xs">
-                            <p className="font-bold">รวดเร็วในการให้บริการ</p>
-                            <p className="text-gray-500">ตอบด่วน ตอบไว</p>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-3 p-4 border border-gray-100 rounded-lg">
-                        <div className="bg-gray-100 p-2 rounded-full">🛡️</div>
-                        <div className="text-xs">
-                            <p className="font-bold">ชำระเงินปลอดภัย</p>
-                            <p className="text-gray-500">ด้วยระบบออนไลน์</p>
-                        </div>
                     </div>
                 </div>
             </div>

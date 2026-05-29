@@ -48,7 +48,7 @@ const ProductRow = ({
             <td className="px-6 py-4 text-gray-500 font-medium text-sm">{srNo}</td>
             <td className="px-6 py-4">
                 <Image
-                    src={product.imagePath}
+                    src={product.images && product.images.length > 0 ? product.images[0].url : '/placeholder.jpg'}
                     width={48}
                     height={48}
                     alt="product_image"

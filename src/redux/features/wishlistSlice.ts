@@ -12,7 +12,7 @@ interface IProduct {
     warranty: string
     tags: string | string[]
     specs: any
-    imagePath: string
+    images: { url: string }[]
 }
 
 export const fetchWishlist = createAsyncThunk("wishlist/fetch", async () => {
