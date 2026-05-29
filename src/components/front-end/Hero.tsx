@@ -38,12 +38,6 @@ const Hero = ({ scrollToProducts }: PropsType) => {
               >
                 ช้อปเลย
               </button>
-              <button
-                className="btn-cart text-base px-8 py-3.5"
-                onClick={scrollToProducts}
-              >
-                ดูสินค้าทั้งหมด
-              </button>
             </div>
 
             {/* Trust badges */}
