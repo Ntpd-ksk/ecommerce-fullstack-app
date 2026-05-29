@@ -817,7 +817,112 @@ function ProfileContent() {
       {/* Address Modal */}
       {isAddressModalOpen && (
         <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4 backdrop-blur-sm">
-          {/* ... existing Address Modal content ... */}
+          <div className="bg-white w-full max-w-lg rounded-xl shadow-2xl overflow-hidden">
+            <div className="p-6 border-b flex justify-between items-center bg-gray-50">
+              <h3 className="text-xl font-bold">{editingAddress ? "แก้ไขที่อยู่" : "เพิ่มที่อยู่ใหม่"}</h3>
+              <button onClick={() => setIsAddressModalOpen(false)} className="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            </div>
+            <form onSubmit={handleAddressSubmit} className="p-6 max-h-[80vh] overflow-y-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-sm font-medium">ชื่อ-นามสกุล ผู้รับ</label>
+                  <input
+                    type="text"
+                    required
+                    className="w-full border border-gray-300 p-2 rounded focus:border-accent outline-none"
+                    value={addressFormData.name}
+                    onChange={(e) => setAddressFormData({ ...addressFormData, name: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-sm font-medium">เบอร์โทรศัพท์</label>
+                  <input
+                    type="text"
+                    required
+                    className="w-full border border-gray-300 p-2 rounded focus:border-accent outline-none"
+                    value={addressFormData.phone}
+                    onChange={(e) => setAddressFormData({ ...addressFormData, phone: e.target.value })}
+                  />
+                </div>
+                <div className="md:col-span-2 space-y-1">
+                  <label className="text-sm font-medium">ที่อยู่ (บ้านเลขที่, ถนน, ซอย)</label>
+                  <textarea
+                    required
+                    rows={2}
+                    className="w-full border border-gray-300 p-2 rounded focus:border-accent outline-none"
+                    value={addressFormData.address}
+                    onChange={(e) => setAddressFormData({ ...addressFormData, address: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-sm font-medium">แขวง / ตำบล</label>
+                  <input
+                    type="text"
+                    required
+                    className="w-full border border-gray-300 p-2 rounded focus:border-accent outline-none"
+                    value={addressFormData.subDistrict}
+                    onChange={(e) => setAddressFormData({ ...addressFormData, subDistrict: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-sm font-medium">เขต / อำเภอ</label>
+                  <input
+                    type="text"
+                    required
+                    className="w-full border border-gray-300 p-2 rounded focus:border-accent outline-none"
+                    value={addressFormData.district}
+                    onChange={(e) => setAddressFormData({ ...addressFormData, district: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-sm font-medium">จังหวัด</label>
+                  <input
+                    type="text"
+                    required
+                    className="w-full border border-gray-300 p-2 rounded focus:border-accent outline-none"
+                    value={addressFormData.province}
+                    onChange={(e) => setAddressFormData({ ...addressFormData, province: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-sm font-medium">รหัสไปรษณีย์</label>
+                  <input
+                    type="text"
+                    required
+                    className="w-full border border-gray-300 p-2 rounded focus:border-accent outline-none"
+                    value={addressFormData.postalCode}
+                    onChange={(e) => setAddressFormData({ ...addressFormData, postalCode: e.target.value })}
+                  />
+                </div>
+                <div className="md:col-span-2 flex items-center gap-2 pt-2">
+                  <input
+                    type="checkbox"
+                    checked={addressFormData.isDefault}
+                    onChange={(e) => setAddressFormData({ ...addressFormData, isDefault: e.target.checked })}
+                    className="w-4 h-4 accent-accent"
+                  />
+                  <label className="text-sm font-medium">ตั้งเป็นที่อยู่เริ่มต้น</label>
+                </div>
+              </div>
+              <div className="flex gap-4 pt-6">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="bg-accent text-white px-8 py-2 rounded font-bold hover:opacity-90 disabled:bg-gray-400"
+                >
+                  {loading ? "กำลังบันทึก..." : editingAddress ? "บันทึกการแก้ไข" : "เพิ่มที่อยู่"}
+                </button>
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={() => setIsAddressModalOpen(false)}
+                  className="border border-gray-300 px-8 py-2 rounded font-bold hover:bg-gray-50 disabled:bg-gray-100"
+                >
+                  ยกเลิก
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 

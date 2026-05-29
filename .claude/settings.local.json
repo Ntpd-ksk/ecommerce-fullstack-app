@@ -45,7 +45,11 @@
       "Bash(python .claude/skills/ui-ux-pro-max/scripts/search.py \"dashboard admin panel\" --stack html-tailwind -n 10)",
       "Bash(python .claude/skills/ui-ux-pro-max/scripts/search.py \"dashboard sidebar layout\" --stack html-tailwind)",
       "Bash(python .claude/skills/ui-ux-pro-max/scripts/search.py \"table data zebra action buttons\" --domain ux -n 5)",
-      "Bash(grep \":$\")"
+      "Bash(grep \":$\")",
+      "Bash(python3 .claude/skills/ui-ux-pro-max/scripts/search.py \"ecommerce landing banner carousel\" --design-system -p \"Fakduai Ecommerce\" -f markdown)",
+      "Bash(python3 .claude/skills/ui-ux-pro-max/scripts/search.py \"carousel animation\" --domain ux)",
+      "Bash(python .claude/skills/ui-ux-pro-max/scripts/search.py \"ecommerce landing banner carousel\" --design-system -p \"Fakduai Ecommerce\" -f markdown)",
+      "Bash(python .claude/skills/ui-ux-pro-max/scripts/search.py \"carousel animation\" --domain ux)"
     ],
     "additionalDirectories": [
       "D:\\ไฟล์น้องตี๋\\Natapod\\Work\\csc350\\ecommerce-fullstack\\src\\app\\api\\product\\ [id]",

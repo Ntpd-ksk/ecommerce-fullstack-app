@@ -8,6 +8,9 @@ import React, { useEffect, useState } from "react"
 const slides = [
   { image: "/product-banner-1.jpg", position: "bg-center" },
   { image: "/product-banner-2.jpg", position: "bg-right" },
+  { image: "/product-banner-3.jpg", position: "bg-center" },
+  { image: "/product-banner-4.png", position: "bg-center" },
+  { image: "/product-banner-5.jpg", position: "bg-center" },
 ]
 
 const Banner = () => {
