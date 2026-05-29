@@ -31,47 +31,60 @@ const AccountsPage = () => {
   }, [])
 
   return (
-    <div className='bg-white h-[calc(100vh-96px)] rounded-lg p-4'>
-      <h2 className='text-3xl'>รายชื่อผู้ใช้ทั้งหมด</h2>
+    <div className='space-y-6'>
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className='text-3xl font-bold text-gray-900 tracking-tight'>รายชื่อผู้ใช้ทั้งหมด</h2>
+          <p className="text-sm text-gray-500 mt-1">จัดการข้อมูลบัญชีผู้ใช้ในระบบ</p>
+        </div>
+      </div>
 
-      <div className='mt-4 h-[calc(100vh-180px)] overflow-y-auto'>
-        <table className='w-full text-left'>
-          <thead>
-            <tr className='text-gray-500 border-t border-[#ececec]'>
-              <th className="p-2">ลำดับ</th>
-              <th className="p-2">ชื่อ</th>
-              <th className="p-2">อีเมล</th>
-              <th className="p-2">เบอร์โทรศัพท์</th>
-              <th className="p-2">บทบาท</th>
-              <th className="p-2">จำนวนคำสั่งซื้อ</th>
-              <th className="p-2">การจัดการ</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user, index) => (
-              <tr key={user.id} className="border-t border-[#ececec]">
-                <td className="p-2">{index + 1}</td>
-                <td className="p-2">{user.name || "-"}</td>
-                <td className="p-2">{user.email}</td>
-                <td className="p-2">{user.phone || "-"}</td>
-                <td className="p-2">
-                  <span className={`px-2 py-1 rounded-full text-xs ${user.role === "ADMIN" ? "bg-red-100 text-red-600" : "bg-blue-100 text-blue-600"}`}>
-                    {user.role}
-                  </span>
-                </td>
-                <td className="p-2">{user._count.orders}</td>
-                <td className="p-2">
-                  <button
-                    onClick={() => router.push(`/admin/accounts/${user.id}`)}
-                    className="bg-accent text-white px-3 py-1 rounded-md text-sm hover:opacity-90 transition-opacity"
-                  >
-                    ดู
-                  </button>
-                </td>
+      <div className='bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden'>
+        <div className='overflow-x-auto'>
+          <table className='w-full text-left border-collapse'>
+            <thead className='bg-[#0a0a0a] text-gray-300 text-[11px] uppercase tracking-widest font-bold'>
+              <tr>
+                <th className="px-6 py-4">ลำดับ</th>
+                <th className="px-6 py-4">ชื่อ</th>
+                <th className="px-6 py-4">อีเมล</th>
+                <th className="px-6 py-4">เบอร์โทรศัพท์</th>
+                <th className="px-6 py-4">บทบาท</th>
+                <th className="px-6 py-4">คำสั่งซื้อ</th>
+                <th className="px-6 py-4 text-center">จัดการ</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {users.map((user, index) => (
+                <tr key={user.id} className="hover:bg-gray-50 transition-colors even:bg-gray-50/30">
+                  <td className="px-6 py-4 text-gray-500 font-medium text-sm">{index + 1}</td>
+                  <td className="px-6 py-4 font-semibold text-gray-900">{user.name || "ไม่ระบุชื่อ"}</td>
+                  <td className="px-6 py-4 text-gray-600">{user.email}</td>
+                  <td className="px-6 py-4 text-gray-600">{user.phone || "-"}</td>
+                  <td className="px-6 py-4">
+                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tight ${
+                      user.role === "ADMIN"
+                        ? "bg-[#ef4444]/10 text-[#ef4444]"
+                        : "bg-gray-100 text-gray-600"
+                    }`}>
+                      {user.role}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 font-bold text-gray-900">{user._count.orders}</td>
+                  <td className="px-6 py-4">
+                    <div className="flex justify-center">
+                      <button
+                        onClick={() => router.push(`/admin/accounts/${user.id}`)}
+                        className="bg-gray-900 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-[#ef4444] transition-all shadow-sm"
+                      >
+                        ดูรายละเอียด
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   )

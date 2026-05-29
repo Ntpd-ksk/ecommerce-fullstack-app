@@ -26,11 +26,11 @@ const layout = ({children}: {children: React.ReactNode}) => {
   // หมายเหตุ: Middleware (src/middleware.ts) จะทำหน้าที่ตรวจสอบ session และ role ADMIN ให้อัตโนมัติ
   // หากเข้าหน้านี้ได้ แสดงว่า login แล้วและเป็น ADMIN
 
-  return <div className="flex">
+  return <div className="flex bg-[#f4f4f5] min-h-screen">
     <Sidebar />
-    <div className='w-full h-full'>
+    <div className='w-full'>
         {/* <Navbar /> */}
-        <div className='bg-gray-200 p-4 h-[calc(100vh-64px)]'>{children}</div>
+        <div className='p-8 h-full'>{children}</div>
     </div>
     {isLoading && <Loader />}
   </div>

@@ -44,32 +44,38 @@ const ProductRow = ({
     }
 
     return (
-        <tr className="border-b border-[#ececec] hover:bg-gray-50 cursor-pointer" onClick={onEdit}>
-            <td className="py-2 text-center">
-                <div>{srNo}</div>
-            </td>
-            <td>
-                <div>{product.name}</div>
-            </td>
-            <td className="text-center">฿ {product.price}</td>
-            <td className="py-2 flex justify-center">
+        <tr className="hover:bg-gray-50 transition-colors cursor-pointer even:bg-gray-50/50" onClick={onEdit}>
+            <td className="px-6 py-4 text-gray-500 font-medium text-sm">{srNo}</td>
+            <td className="px-6 py-4">
                 <Image
                     src={product.imagePath}
-                    width={40}
-                    height={40}
+                    width={48}
+                    height={48}
                     alt="product_image"
-                    className="object-cover rounded"
+                    className="object-cover rounded-xl border border-gray-200 w-12 h-12"
                 />
             </td>
+            <td className="px-6 py-4">
+                <div className="font-semibold text-gray-900">{product.name}</div>
+                <div className="text-xs text-gray-400 mt-0.5">{product.brand || '-'}</div>
+            </td>
+            <td className="px-6 py-4 font-bold text-gray-900">฿{Number(product.price).toLocaleString()}</td>
             <td>
-                <div className="text-2xl flex justify-center items-center gap-2 text-gray-600">
-                    <RiDeleteBin5Line
-                        className="text-[20px] cursor-pointer hover:text-red-600"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            onDelete();
-                        }}
-                    />
+                <div className="flex justify-center gap-2">
+                    <button
+                        className="p-2.5 text-blue-600 hover:bg-blue-50 rounded-xl transition-colors"
+                        onClick={(e) => { e.stopPropagation(); onEdit(); }}
+                        title="แก้ไข"
+                    >
+                        <CiEdit className="text-lg" />
+                    </button>
+                    <button
+                        className="p-2.5 text-red-500 hover:bg-red-50 rounded-xl transition-colors"
+                        onClick={(e) => { e.stopPropagation(); onDelete(); }}
+                        title="ลบ"
+                    >
+                        <RiDeleteBin5Line className="text-lg" />
+                    </button>
                 </div>
             </td>
         </tr>

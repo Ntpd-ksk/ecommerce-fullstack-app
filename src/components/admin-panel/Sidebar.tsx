@@ -45,24 +45,25 @@ const menus =[
 const Sidebar = () => {
   const pathName = usePathname()
   
-  return <div className="bg-white w-[300px] min-h-screen p-4 shrink-0">
-    <div className="flex items-center gap-4">
-      <img className="size-12 rounded-lg" src="/logo.jpg" alt="logo" />
-      <h2 className="text-[20px] font-semibold">Natapod Shop</h2>
+  return <div className="bg-[#0a0a0a] w-[300px] min-h-screen p-6 shrink-0 border-r border-white/5 text-gray-400">
+    <div className="flex items-center gap-4 mb-10">
+      <img className="size-10 rounded-lg object-cover" src="/logo.jpg" alt="logo" />
+      <h2 className="text-[22px] font-bold text-white tracking-tighter italic">NATAPOD <span className="text-[#ef4444]">SHOP</span></h2>
     </div>
 
-<ul className="space-y-4 mt-6">
+<ul className="space-y-2">
   {menus.map(menu => (
   <Link
   key={menu.title}
   href={menu.href}
-  className={`flex gap-2 items-center p-4 rounded-lg cursor-pointer hover:bg-pink
-  hover:text-white ${
-    pathName === menu.href ? "bg-pink text-white": "bg-gray-200"
+  className={`flex gap-3 items-center px-4 py-3 rounded-xl cursor-pointer transition-all duration-200 group ${
+    pathName === menu.href
+      ? "bg-[#ef4444] text-white shadow-lg shadow-red-600/20"
+      : "hover:bg-white/5 hover:text-white"
     }`}
     >
-      <div className="text-[20px]">{menu.icon}</div>
-      <p>{menu.title}</p>
+      <div className={`text-[22px] transition-colors ${pathName === menu.href ? "text-white" : "group-hover:text-[#ef4444]"}`}>{menu.icon}</div>
+      <p className="font-medium">{menu.title}</p>
     </Link>
     ))}
 </ul>

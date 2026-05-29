@@ -18,6 +18,8 @@ interface IAnalytics {
   orderStats: IOrderStat[]
 }
 
+import { MdPeople, MdOutlineReceiptLong, MdAttachMoney, MdShoppingCart } from "react-icons/md"
+
 const DashboardAnalytics = () => {
   const [data, setData] = useState<IAnalytics | null>(null)
   const dispatch = useAppDispatch()
@@ -32,12 +34,12 @@ const DashboardAnalytics = () => {
   }, [])
 
   const statusColor: Record<string, string> = {
-    PENDING: "bg-yellow-100 text-yellow-600",
-    VERIFYING: "bg-orange-100 text-orange-600",
-    PAID: "bg-blue-100 text-blue-600",
-    SHIPPING: "bg-purple-100 text-purple-600",
-    SUCCESS: "bg-green-100 text-green-600",
-    CANCELLED: "bg-red-100 text-red-600",
+    PENDING: "bg-gray-100 text-gray-600",
+    VERIFYING: "bg-orange-50 text-orange-600 border border-orange-100",
+    PAID: "bg-blue-50 text-blue-600 border border-blue-100",
+    SHIPPING: "bg-purple-50 text-purple-600 border border-purple-100",
+    SUCCESS: "bg-green-50 text-green-600 border border-green-100",
+    CANCELLED: "bg-red-50 text-red-600 border border-red-100",
   }
 
   const statusLabel: Record<string, string> = {
@@ -52,48 +54,81 @@ const DashboardAnalytics = () => {
   if (!data) return null
 
   return (
-    <div className='h-[calc(100vh-96px)] overflow-y-auto'>
-      <h2 className='text-3xl'>ภาพรวมและสถิติ</h2>
+    <div className='space-y-8'>
+      <div className="flex justify-between items-center">
+        <h2 className='text-3xl font-bold text-gray-900 tracking-tight'>ภาพรวมและสถิติ</h2>
+        <p className="text-gray-500 text-sm">ข้อมูลอัปเดตล่าสุด: {new Date().toLocaleDateString('th-TH')}</p>
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-        <div className="bg-white rounded-lg p-4 shadow-sm">
-          <div className="text-gray-500 text-sm">สมาชิกทั้งหมด</div>
-          <div className="text-3xl font-semibold mt-1">{data.totalUsers}</div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition-all">
+          <div>
+            <div className="text-gray-500 text-sm font-medium">สมาชิกทั้งหมด</div>
+            <div className="text-3xl font-bold mt-1 text-gray-900">{data.totalUsers.toLocaleString()}</div>
+          </div>
+          <div className="w-12 h-12 bg-red-50 text-[#ef4444] rounded-xl flex items-center justify-center text-2xl">
+            <MdPeople />
+          </div>
         </div>
-        <div className="bg-white rounded-lg p-4 shadow-sm">
-          <div className="text-gray-500 text-sm">คำสั่งซื้อทั้งหมด</div>
-          <div className="text-3xl font-semibold mt-1">{data.totalOrders}</div>
+
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition-all">
+          <div>
+            <div className="text-gray-500 text-sm font-medium">คำสั่งซื้อทั้งหมด</div>
+            <div className="text-3xl font-bold mt-1 text-gray-900">{data.totalOrders.toLocaleString()}</div>
+          </div>
+          <div className="w-12 h-12 bg-red-50 text-[#ef4444] rounded-xl flex items-center justify-center text-2xl">
+            <MdShoppingCart />
+          </div>
         </div>
-        <div className="bg-white rounded-lg p-4 shadow-sm">
-          <div className="text-gray-500 text-sm">รายได้รวม</div>
-          <div className="text-3xl font-semibold mt-1">฿{data.totalRevenue.toLocaleString()}</div>
+
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition-all">
+          <div>
+            <div className="text-gray-500 text-sm font-medium">รายได้รวม</div>
+            <div className="text-3xl font-bold mt-1 text-gray-900">฿{data.totalRevenue.toLocaleString()}</div>
+          </div>
+          <div className="w-12 h-12 bg-red-50 text-[#ef4444] rounded-xl flex items-center justify-center text-2xl">
+            <MdAttachMoney />
+          </div>
         </div>
-        <div className="bg-white rounded-lg p-4 shadow-sm">
-          <div className="text-gray-500 text-sm">สลิปรอตรวจสอบ</div>
-          <div className="text-3xl font-semibold mt-1">{data.pendingSlips}</div>
+
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition-all">
+          <div>
+            <div className="text-gray-500 text-sm font-medium">สลิปรอตรวจสอบ</div>
+            <div className="text-3xl font-bold mt-1 text-[#ef4444]">{data.pendingSlips.toLocaleString()}</div>
+          </div>
+          <div className="w-12 h-12 bg-red-50 text-[#ef4444] rounded-xl flex items-center justify-center text-2xl">
+            <MdOutlineReceiptLong />
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-        <div className="bg-white rounded-lg p-4 shadow-sm">
-          <h3 className="text-lg font-semibold mb-4">สถิติคำสั่งซื้อตามสถานะ</h3>
-          <div className="space-y-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
+          <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+            <div className="w-1.5 h-6 bg-[#ef4444] rounded-full"></div>
+            สถิติคำสั่งซื้อตามสถานะ
+          </h3>
+          <div className="space-y-4">
             {data.orderStats.map((stat) => (
-              <div key={stat.status} className="flex items-center justify-between">
-                <span className={`px-3 py-1 rounded-full text-sm ${statusColor[stat.status] || "bg-gray-100 text-gray-600"}`}>
+              <div key={stat.status} className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 transition-colors">
+                <span className={`px-4 py-1.5 rounded-full text-xs font-bold ${statusColor[stat.status] || "bg-gray-100 text-gray-600"}`}>
                   {statusLabel[stat.status] || stat.status}
                 </span>
-                <span className="font-semibold">{stat._count.status}</span>
+                <span className="font-bold text-lg text-gray-900">{stat._count.status}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="bg-white rounded-lg p-4 shadow-sm">
-          <h3 className="text-lg font-semibold mb-4">ข้อมูลสินค้า</h3>
-          <div className="flex items-center justify-between">
-            <span className="text-gray-500">สินค้าทั้งหมด</span>
-            <span className="text-2xl font-semibold">{data.totalProducts}</span>
+        <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 flex flex-col">
+          <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+            <div className="w-1.5 h-6 bg-[#ef4444] rounded-full"></div>
+            ข้อมูลสินค้า
+          </h3>
+          <div className="flex-1 flex flex-col justify-center items-center p-8 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+            <span className="text-gray-500 font-medium">สินค้าทั้งหมดในระบบ</span>
+            <span className="text-6xl font-black text-gray-900 mt-2">{data.totalProducts}</span>
+            <button className="mt-6 text-[#ef4444] font-bold text-sm hover:underline">จัดการสินค้าทั้งหมด →</button>
           </div>
         </div>
       </div>

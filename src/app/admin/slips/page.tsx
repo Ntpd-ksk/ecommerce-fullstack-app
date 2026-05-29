@@ -96,126 +96,163 @@ const OrderManagementPage = () => {
   }
 
   return (
-    <div className='bg-white h-[calc(100vh-96px)] rounded-lg p-4 flex flex-col'>
-      <div className="flex justify-between items-center mb-4">
-        <h2 className='text-3xl'>จัดการคำสั่งซื้อ</h2>
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-500">กรองสถานะ:</span>
+    <div className='space-y-6'>
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className='text-3xl font-bold text-gray-900 tracking-tight'>จัดการคำสั่งซื้อ</h2>
+          <p className="text-sm text-gray-500 mt-1">ตรวจสอบสลิปและสถานะการจัดส่งสินค้า</p>
+        </div>
+        <div className="flex items-center gap-3 bg-white p-2 rounded-xl border border-gray-100 shadow-sm">
+          <span className="text-[10px] font-black text-gray-400 ml-2 uppercase tracking-widest">Filter:</span>
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="border rounded px-2 py-1 text-sm outline-none"
+            className="bg-gray-50 border-none rounded-lg px-4 py-2 text-sm font-bold outline-none cursor-pointer hover:bg-gray-100 transition-colors"
           >
-            <option value="">ทั้งหมด</option>
-            <option value="PENDING">รอดำเนินการ (PENDING)</option>
-            <option value="VERIFYING">รอตรวจสอบสลิป (VERIFYING)</option>
-            <option value="PAID">ชำระเงินแล้ว (PAID)</option>
-            <option value="SHIPPING">กำลังจัดส่ง (SHIPPING)</option>
-            <option value="SUCCESS">สำเร็จ (SUCCESS)</option>
-            <option value="CANCELLED">ยกเลิก (CANCELLED)</option>
+            <option value="">คำสั่งซื้อทั้งหมด</option>
+            <option value="PENDING">รอชำระเงิน</option>
+            <option value="VERIFYING">รอตรวจสอบสลิป</option>
+            <option value="PAID">ชำระเงินแล้ว</option>
+            <option value="SHIPPING">กำลังจัดส่ง</option>
+            <option value="SUCCESS">สำเร็จ</option>
+            <option value="CANCELLED">ยกเลิก</option>
           </select>
         </div>
       </div>
 
-      <div className='flex-1 overflow-y-auto'>
-        <table className='w-full text-left'>
-          <thead className="sticky top-0 bg-white z-10">
-            <tr className='text-gray-500 border-t border-b border-[#ececec]'>
-              <th className="p-2">วันที่ / เลขที่</th>
-              <th className="p-2">ผู้ซื้อ</th>
-              <th className="p-2">รายการสินค้า</th>
-              <th className="p-2">ยอดรวม</th>
-              <th className="p-2">สลิป</th>
-              <th className="p-2">สถานะ</th>
-              <th className="p-2 text-right">การจัดการ</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.length === 0 && (
+      <div className='bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden'>
+        <div className='overflow-x-auto'>
+          <table className='w-full text-left border-collapse'>
+            <thead className='bg-[#0a0a0a] text-gray-300 text-[10px] uppercase tracking-widest font-bold'>
               <tr>
-                <td colSpan={7} className="p-8 text-center text-gray-400">ไม่พบข้อมูลคำสั่งซื้อ</td>
+                <th className="px-6 py-4">วันที่ / เลขที่</th>
+                <th className="px-6 py-4">ข้อมูลผู้ซื้อ</th>
+                <th className="px-6 py-4">ยอดรวม</th>
+                <th className="px-6 py-4 text-center">หลักฐานสลิป</th>
+                <th className="px-6 py-4">สถานะ</th>
+                <th className="px-6 py-4 text-right">การจัดการ</th>
               </tr>
-            )}
-            {orders.map((order) => (
-              <tr key={order.id} className="border-b border-[#ececec] hover:bg-gray-50">
-                <td className="p-2">
-                  <div className="text-xs text-gray-400">{new Date(order.createdAt).toLocaleString('th-TH')}</div>
-                  <div className="font-mono text-[10px]">{order.id}</div>
-                </td>
-                <td className="p-2">
-                  <div className="font-medium">{order.user.name}</div>
-                  <div className="text-xs text-gray-400">{order.user.email}</div>
-                  <div className="text-xs text-gray-400">{order.user.phone}</div>
-                </td>
-                <td className="p-2">
-                  <div className="max-w-[200px]">
-                    {order.items.map((item, idx) => (
-                      <div key={idx} className="text-xs truncate">
-                        • {item.product.name} x{item.quantity}
-                      </div>
-                    ))}
-                  </div>
-                </td>
-                <td className="p-2 font-medium">฿{Number(order.total).toLocaleString()}</td>
-                <td className="p-2">
-                  {order.paymentSlip ? (
-                    <img
-                      src={order.paymentSlip}
-                      alt="slip"
-                      className="h-12 w-12 object-cover cursor-pointer border rounded hover:opacity-80"
-                      onClick={() => setSelectedSlip(order.paymentSlip)}
-                    />
-                  ) : (
-                    <span className="text-xs text-gray-300">ไม่มีสลิป</span>
-                  )}
-                </td>
-                <td className="p-2">
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${getStatusColor(order.status)}`}>
-                    {order.status}
-                  </span>
-                </td>
-                <td className="p-2 text-right">
-                  <div className="flex flex-col gap-1 items-end">
-                    <div className="flex gap-1">
-                      {order.status === "VERIFYING" && (
-                        <button
-                          onClick={() => updateStatus(order.id, "PAID")}
-                          className="bg-green-500 text-white px-2 py-1 rounded text-[10px] hover:bg-green-600"
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {orders.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="px-6 py-20 text-center text-gray-400 font-medium">ไม่พบข้อมูลคำสั่งซื้อในระบบ</td>
+                </tr>
+              )}
+              {orders.map((order) => (
+                <tr key={order.id} className="hover:bg-gray-50 transition-colors even:bg-gray-50/30">
+                  <td className="px-6 py-4">
+                    <div className="text-xs text-gray-500 font-medium">{new Date(order.createdAt).toLocaleDateString('th-TH', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
+                    <div className="font-mono text-[9px] text-gray-400 mt-1 uppercase">ID: {order.id.slice(-8)}</div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="font-bold text-gray-900">{order.user.name || 'ลูกค้าทั่วไป'}</div>
+                    <div className="text-[11px] text-gray-500 mt-0.5">{order.user.email}</div>
+                  </td>
+                  <td className="px-6 py-4 font-black text-gray-900">฿{Number(order.total).toLocaleString()}</td>
+                  <td className="px-6 py-4">
+                    <div className="flex justify-center">
+                      {order.paymentSlip ? (
+                        <div
+                          className="relative group cursor-zoom-in"
+                          onClick={() => setSelectedSlip(order.paymentSlip)}
                         >
-                          ยืนยันสลิป
-                        </button>
+                          <img
+                            src={order.paymentSlip}
+                            alt="slip"
+                            className="h-14 w-10 object-cover rounded-md border border-gray-200 shadow-sm transition-all group-hover:scale-105 group-hover:shadow-md"
+                          />
+                          <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 flex items-center justify-center rounded-md transition-opacity">
+                            <span className="text-white text-[10px] font-bold">VIEW</span>
+                          </div>
+                        </div>
+                      ) : (
+                        <span className="text-[10px] font-bold text-gray-300 uppercase italic">No Slip</span>
                       )}
-                      <select
-                        value={order.status}
-                        onChange={(e) => updateStatus(order.id, e.target.value)}
-                        className="border rounded px-1 py-1 text-[10px] outline-none"
-                      >
-                        <option value="PENDING">PENDING</option>
-                        <option value="VERIFYING">VERIFYING</option>
-                        <option value="PAID">PAID</option>
-                        <option value="SHIPPING">SHIPPING</option>
-                        <option value="SUCCESS">SUCCESS</option>
-                        <option value="CANCELLED">CANCELLED</option>
-                      </select>
                     </div>
-                    <button
-                      onClick={() => deleteOrder(order.id)}
-                      className="text-red-500 hover:text-red-700 text-[10px] font-medium"
-                    >
-                      ลบคำสั่งซื้อ
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tight ${getStatusColor(order.status)}`}>
+                      {order.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex flex-col gap-2 items-end">
+                      <div className="flex gap-2">
+                        {order.status === "VERIFYING" && (
+                          <button
+                            onClick={() => updateStatus(order.id, "PAID")}
+                            className="bg-[#ef4444] text-white px-3 py-1.5 rounded-lg text-[10px] font-bold hover:bg-red-600 shadow-sm shadow-red-600/10 transition-all"
+                          >
+                            ยืนยันสลิป
+                          </button>
+                        )}
+                        <select
+                          value={order.status}
+                          onChange={(e) => updateStatus(order.id, e.target.value)}
+                          className="bg-white border border-gray-200 rounded-lg px-2 py-1.5 text-[10px] font-bold outline-none cursor-pointer hover:border-[#ef4444] transition-all"
+                        >
+                          <option value="PENDING">PENDING</option>
+                          <option value="VERIFYING">VERIFYING</option>
+                          <option value="PAID">PAID</option>
+                          <option value="SHIPPING">SHIPPING</option>
+                          <option value="SUCCESS">SUCCESS</option>
+                          <option value="CANCELLED">CANCELLED</option>
+                        </select>
+                      </div>
+                      <button
+                        onClick={() => deleteOrder(order.id)}
+                        className="text-gray-400 hover:text-red-600 text-[10px] font-bold transition-colors uppercase tracking-widest"
+                      >
+                        [ DELETE ]
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {selectedSlip && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setSelectedSlip(null)}>
-          <div className="bg-white p-2 rounded-lg max-w-full max-h-full">
-            <img src={selectedSlip} alt="Full slip" className="max-w-full max-h-[90vh]" />
+        <div
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-6 animate-in fade-in duration-200"
+          onClick={() => setSelectedSlip(null)}
+        >
+          <div
+            className="bg-white rounded-2xl overflow-hidden max-w-md w-full shadow-2xl animate-in zoom-in duration-300"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-white">
+              <h4 className="font-bold text-gray-900">Payment Evidence</h4>
+              <button
+                onClick={() => setSelectedSlip(null)}
+                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-all"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="p-6 bg-gray-50 flex justify-center border-b border-gray-100">
+              <img src={selectedSlip} alt="Full slip" className="max-h-[60vh] rounded-lg shadow-lg border border-white" />
+            </div>
+            <div className="p-4 flex gap-3">
+              <button
+                onClick={() => setSelectedSlip(null)}
+                className="flex-1 py-3 bg-gray-100 text-gray-600 font-bold rounded-xl hover:bg-gray-200 transition-all text-sm"
+              >
+                Close
+              </button>
+              <button
+                className="flex-1 py-3 bg-[#ef4444] text-white font-bold rounded-xl hover:bg-red-600 transition-all shadow-lg shadow-red-600/10 text-sm"
+                onClick={() => {
+                  // If we had the order ID here we could approve directly
+                  setSelectedSlip(null);
+                }}
+              >
+                Download
+              </button>
+            </div>
           </div>
         </div>
       )}

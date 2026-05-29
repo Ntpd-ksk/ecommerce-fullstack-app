@@ -36,7 +36,16 @@
       "Bash(python \".claude/skills/ui-ux-pro-max/scripts/search.py\" \"ecommerce tech product landing page professional\" --design-system -p \"Fakduai Store\")",
       "Bash(curl -s http://localhost:3002/api/get_products)",
       "Bash(curl -s http://localhost:3000/api/get_products)",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3002/api/get_products)"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3002/api/get_products)",
+      "Bash(python3 skills/ui-ux-pro-max/scripts/search.py \"admin dashboard ecommerce computer gaming black dark-gray red-accent professional\" --design-system -p \"Fakduai Admin\" -f markdown)",
+      "Bash(python skills/ui-ux-pro-max/scripts/search.py \"admin dashboard ecommerce computer gaming black dark-gray red-accent professional\" --design-system -p \"Fakduai Admin\" -f markdown)",
+      "Bash(python .claude/skills/ui-ux-pro-max/scripts/search.py \"admin dashboard ecommerce computer gaming black dark-gray red-accent professional\" --design-system -p \"Fakduai Admin\" -f markdown)",
+      "Bash(python .claude/skills/ui-ux-pro-max/scripts/search.py \"dark mode gaming dashboard sidebar\" --domain style -n 5)",
+      "Bash(python .claude/skills/ui-ux-pro-max/scripts/search.py \"gaming red black dark\" --domain color -n 5)",
+      "Bash(python .claude/skills/ui-ux-pro-max/scripts/search.py \"dashboard admin panel\" --stack html-tailwind -n 10)",
+      "Bash(python .claude/skills/ui-ux-pro-max/scripts/search.py \"dashboard sidebar layout\" --stack html-tailwind)",
+      "Bash(python .claude/skills/ui-ux-pro-max/scripts/search.py \"table data zebra action buttons\" --domain ux -n 5)",
+      "Bash(grep \":$\")"
     ],
     "additionalDirectories": [
       "D:\\ไฟล์น้องตี๋\\Natapod\\Work\\csc350\\ecommerce-fullstack\\src\\app\\api\\product\\ [id]",
