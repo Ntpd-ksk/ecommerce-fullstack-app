@@ -13,7 +13,7 @@ export async function GET() {
     const wishlist = await prisma.wishlist.findMany({
       where: { userId: (session.user as any).id },
       include: {
-        product: true,
+        product: { include: { images: true } },
       },
     });
 

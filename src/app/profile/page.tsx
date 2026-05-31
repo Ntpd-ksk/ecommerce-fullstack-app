@@ -32,7 +32,7 @@ interface OrderItem {
   price: number;
   product: {
     name: string;
-    imagePath: string;
+    images: { url: string }[];
   };
 }
 
@@ -494,7 +494,7 @@ function ProfileContent() {
                               <div className="space-y-3">
                                 {order.items.map((item) => (
                                   <div key={item.id} className="flex gap-4 p-3 border rounded-lg hover:border-accent/30 transition-colors">
-                                    <img src={item.product.imagePath} alt={item.product.name} className="w-16 h-16 object-contain bg-gray-50 rounded" />
+                                    <img src={item.product.images && item.product.images.length > 0 ? item.product.images[0].url : "/placeholder.jpg"} alt={item.product.name} className="w-16 h-16 object-contain bg-gray-50 rounded" />
                                     <div className="flex-1 min-w-0">
                                       <p className="font-bold text-sm truncate">{item.product.name}</p>
                                       <p className="text-xs text-gray-500">จำนวน: {item.quantity}</p>
@@ -785,7 +785,7 @@ function ProfileContent() {
                         <div key={product.id} className="relative group">
                           <ProductCard
                             id={product.id}
-                            img={product.imagePath}
+                            img={product.images && product.images.length > 0 ? product.images[0].url : "/placeholder.jpg"}
                             category={product.brand}
                             title={product.name}
                             price={parseFloat(product.price)}

@@ -15,7 +15,7 @@ export async function GET() {
       include: {
         items: {
           include: {
-            product: true
+            product: { include: { images: true } }
           }
         }
       },
