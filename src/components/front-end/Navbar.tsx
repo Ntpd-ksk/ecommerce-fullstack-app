@@ -2,20 +2,22 @@
 
 import { useAppSelector, useAppDispatch } from '@/redux/hook'
 import React, { Dispatch, SetStateAction, useState, useRef, useEffect } from 'react'
-import { AiOutlineShoppingCart, AiOutlineUser, AiOutlineHeart } from 'react-icons/ai'
+import { AiOutlineShoppingCart, AiOutlineUser } from 'react-icons/ai'
 import { BsSearch } from 'react-icons/bs'
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import axios from "axios";
+import CategoryMenu from './CategoryMenu';
 import { openAuthModal, closeAuthModal } from "@/redux/features/authModalSlice";
 
 interface PropsType {
     setShowCart?: Dispatch<SetStateAction<boolean>>;
     setSearchQuery?: Dispatch<SetStateAction<string>>;
     scrollToProducts?: () => void;
+    setFilterType?: Dispatch<SetStateAction<string>>;
 }
 
-const Navbar = ({ setShowCart, setSearchQuery, scrollToProducts }: PropsType) => {
+const Navbar = ({ setShowCart, setSearchQuery, scrollToProducts, setFilterType }: PropsType) => {
     const dispatch = useAppDispatch();
     const { data: session } = useSession();
     const cartCount = useAppSelector((state) => state.cartReducer.length)
@@ -95,18 +97,24 @@ const Navbar = ({ setShowCart, setSearchQuery, scrollToProducts }: PropsType) =>
         if (!session) {
             dispatch(openAuthModal());
         } else {
-            setShowCart && setShowCart(true);
+            setShowCart && setShowCart(prev => !prev);
         }
     };
 
     return (
         <div className='pt-4 bg-white/95 backdrop-blur-md top-0 sticky z-50 shadow-sm'>
             <div className="container">
-                <div className="flex justify-between items-center">
-                    <Link href="/" className="text-3xl font-heading tracking-tight flex items-center group">
-                        <span className="text-secondary group-hover:text-primary transition-colors duration-300">NATAPOD</span>
-                        <span className="bg-primary text-white px-2 py-0.5 rounded ml-1 skew-x-[-12deg] group-hover:shadow-[0_0_15px_rgba(229,57,53,0.4)] transition-all duration-300">GEAR</span>
-                    </Link>
+                <div className="flex justify-between items-center gap-4">
+                    <div className="flex items-center gap-4 md:gap-8">
+                        <Link href="/" className="text-3xl font-heading tracking-tight flex items-center group shrink-0">
+                            <span className="text-secondary group-hover:text-primary transition-colors duration-300">NATAPOD</span>
+                            <span className="bg-primary text-white px-2 py-0.5 rounded ml-1 skew-x-[-12deg] group-hover:shadow-[0_0_15px_rgba(229,57,53,0.4)] transition-all duration-300">GEAR</span>
+                        </Link>
+
+                        {/* Category filter menu */}
+                        <CategoryMenu setFilterType={setFilterType} scrollToProducts={scrollToProducts} />
+                    </div>
+
                     <div className='lg:flex hidden w-full max-w-[520px] relative group' ref={searchRef}>
                         <form onSubmit={handleSearch} className="flex w-full relative">
                             <div className="relative flex w-full items-center rounded-full border-2 border-gray-200 bg-gray-50/80 transition-all duration-300 focus-within:border-primary focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(229,57,53,0.12)] overflow-hidden">

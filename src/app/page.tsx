@@ -9,13 +9,26 @@ import Hero from "@/components/front-end/Hero";
 import Navbar from "@/components/front-end/Navbar";
 import TrendingProducts from "@/components/front-end/TrendingProducts";
 // นำเข้า React และ useState เพื่อใช้ในการจัดการสถานะของ Component
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const Home = () => {
   // สร้าง state ชื่อ showCart โดยใช้ useState ซึ่งเริ่มต้นด้วยค่าเริ่มต้นเป็น false เพื่อแสดงว่าตะกร้าสินค้าไม่ถูกแสดงอยู่
   const [showCart, setShowCart] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [filterType, setFilterType] = useState("ทั้งหมด")
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search)
+      const categoryParam = params.get('category')
+      if (categoryParam) {
+        setFilterType(categoryParam)
+        setTimeout(() => {
+          scrollToProducts()
+        }, 300)
+      }
+    }
+  }, [])
 
   const scrollToProducts = () => {
     const element = document.getElementById("trending-products")
@@ -29,7 +42,7 @@ const Home = () => {
 
   return <main>
     {/* ส่ง setShowCart เป็น props เพื่อให้ Navbar Component สามารถเปลี่ยนแปลงค่า showCart ได้ */}
-    <Navbar setShowCart={setShowCart} setSearchQuery={setSearchQuery} scrollToProducts={scrollToProducts} />
+    <Navbar setShowCart={setShowCart} setSearchQuery={setSearchQuery} scrollToProducts={scrollToProducts} setFilterType={setFilterType} />
     {/* ใช้ตัวแปร showCart เพื่อตรวจสอบว่าตะกร้าสินค้าควรถูกแสดงหรือไม่ ถ้า showCart เป็น true จะแสดง Component Cart */}
     {showCart && <Cart setShowCart={setShowCart} />}
     {/* แสดง Component ตามลำดับ */}
