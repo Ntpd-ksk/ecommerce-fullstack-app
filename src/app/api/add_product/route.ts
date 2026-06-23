@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ msg: "กรุณาอัปโหลดรูปภาพอย่างน้อย 1 รูป" }, { status: 400 });
         }
 
-        const uploadDir = path.join(process.cwd(), "public/uploads");
+        const uploadDir = path.join(process.cwd(), "public", "uploads");
         try {
             await mkdir(uploadDir, { recursive: true });
         } catch (e) {
@@ -76,6 +76,6 @@ export async function POST(request: NextRequest) {
                 msg: "Something Went Wrong"
             },
             { status: 400 }
-        )
+        );
     }
 }
