@@ -37,37 +37,76 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { items, total, paymentMethod } = body;
+    const { items, address, paymentMethod } = body;
 
     if (!items || items.length === 0) {
       return NextResponse.json({ message: "No items in order" }, { status: 400 });
     }
 
-    const newOrder = await prisma.order.create({
-      data: {
-        userId: (session.user as any).id,
-        total: Number(total),
-        paymentMethod: paymentMethod || "bank",
-        status: paymentMethod === "cod" ? "PROCESSING" : "PENDING",
-        items: {
-          create: items.map((item: any) => ({
-            productId: item.id,
-            quantity: Number(item.quantity),
-            price: Number(item.price),
-          })),
-        },
-      } as any, // Use as any to bypass potential type mismatch if generate failed
-      include: {
-        items: true
+    const newOrder = await prisma.$transaction(async (tx) => {
+      let calculatedTotal = 0;
+      const orderItemsData = [];
+
+      for (const item of items) {
+        const productId = item.id || item.productId;
+
+        const product = await tx.product.findUnique({
+          where: { id: productId }
+        });
+
+        if (!product) {
+          throw new Error(`ไม่พบสินค้า ID: ${productId}`);
+        }
+
+        const quantity = Number(item.quantity);
+
+        if (product.stock < quantity) {
+          throw new Error(`สินค้า ${product.name} มีจำนวนสต็อกไม่เพียงพอ (คงเหลือ ${product.stock})`);
+        }
+
+        // หักสต็อก
+        await tx.product.update({
+          where: { id: productId },
+          data: { stock: { decrement: quantity } }
+        });
+
+        // คำนวณราคา
+        const price = product.discountPrice ? Number(product.discountPrice) : Number(product.price);
+        calculatedTotal += price * quantity;
+
+        orderItemsData.push({
+          productId: productId,
+          quantity: quantity,
+          price: price,
+        });
       }
+
+      // สร้างออเดอร์
+      const order = await tx.order.create({
+        data: {
+          userId: (session.user as any).id,
+          total: calculatedTotal,
+          address: address || "",
+          paymentMethod: paymentMethod || "bank",
+          paymentSlip: null,
+          status: paymentMethod === "cod" ? "PROCESSING" : "PENDING",
+          items: {
+            create: orderItemsData
+          }
+        } as any,
+        include: {
+          items: true
+        }
+      });
+
+      return order;
     });
 
     return NextResponse.json({ order: newOrder });
   } catch (error: any) {
     console.error("Create order error:", error);
     return NextResponse.json({
-      message: "Internal Server Error",
-      details: error.message
+      message: error.message || "Internal Server Error",
     }, { status: 500 });
   }
 }
