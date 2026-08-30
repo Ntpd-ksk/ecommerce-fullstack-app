@@ -13,6 +13,7 @@ interface IPayload {
     category: string;
     price: string;
     discountPrice: string;
+    stock: string;
     description: string;
 }
 
@@ -28,6 +29,7 @@ const ProductForm = () => {
         category: "",
         price: "",
         discountPrice: "",
+        stock: "10",
         description: "",
     })
     const [specs, setSpecs] = useState<ISpec[]>([{ key: "", value: "" }])
@@ -88,6 +90,7 @@ const ProductForm = () => {
             formData.append("category", payload.category)
             formData.append("price", payload.price)
             formData.append("discountPrice", payload.discountPrice)
+            formData.append("stock", payload.stock)
             formData.append("description", payload.description)
 
             // Add specs as JSON string
@@ -116,6 +119,7 @@ const ProductForm = () => {
                 category: "",
                 price: "",
                 discountPrice: "",
+                stock: "10",
                 description: "",
             })
             setSpecs([{ key: "", value: "" }])
@@ -217,14 +221,27 @@ const ProductForm = () => {
                 </div>
             </div>
 
-            <div className="flex flex-col gap-1">
-                <label className='font-bold text-gray-700 ml-1'>ราคาที่ลดแล้ว (ใส่เฉพาะที่มีส่วนลด)</label>
-                <input className='bg-white w-full px-4 py-2 border border-gray-300 outline-[#ef4444] rounded-md'
-                    type="text"
-                    placeholder="ใส่ราคาโปรโมชั่น"
-                    value={payload.discountPrice}
-                    onChange={(e) => setPayload({ ...payload, discountPrice: e.target.value })}
-                />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1">
+                    <label className='font-bold text-gray-700 ml-1'>ราคาที่ลดแล้ว (ใส่เฉพาะที่มีส่วนลด)</label>
+                    <input className='bg-white w-full px-4 py-2 border border-gray-300 outline-[#ef4444] rounded-md'
+                        type="text"
+                        placeholder="ใส่ราคาโปรโมชั่น"
+                        value={payload.discountPrice}
+                        onChange={(e) => setPayload({ ...payload, discountPrice: e.target.value })}
+                    />
+                </div>
+                <div className="flex flex-col gap-1">
+                    <label className='font-bold text-gray-700 ml-1'>จำนวนสินค้าคงเหลือ (สต็อก)</label>
+                    <input className='bg-white w-full px-4 py-2 border border-gray-300 outline-[#ef4444] rounded-md'
+                        type="number"
+                        min="0"
+                        placeholder="ระบุจำนวนสต็อก เช่น 10"
+                        value={payload.stock}
+                        onChange={(e) => setPayload({ ...payload, stock: e.target.value })}
+                        required
+                    />
+                </div>
             </div>
 
             <div className="flex flex-col gap-1">

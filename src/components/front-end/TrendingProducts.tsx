@@ -1,17 +1,9 @@
 "use client"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import ProductCard from "./ProductCard"
 import axios from "axios"
-
-interface IProduct {
-  id: string
-  images: { url: string }[]
-  name: string
-  brand: string
-  price: number
-  discountPrice?: number
-  category?: string
-}
+import { useAppDispatch, useAppSelector } from "@/redux/hook"
+import { setProductsList, IProductItem } from "@/redux/features/productsListSlice"
 
 interface PropsType {
   searchQuery: string
@@ -20,14 +12,17 @@ interface PropsType {
 }
 
 const TrendingProducts = ({ searchQuery, filterType, setFilterType }: PropsType) => {
-  const [products, setProducts] = useState<IProduct[]>([])
+  const dispatch = useAppDispatch()
+  const { items: products, isLoaded } = useAppSelector((state) => state.productsListReducer)
 
   useEffect(() => {
-    axios
-      .get("/api/get_products")
-      .then((res) => setProducts(res.data))
-      .catch((err) => console.log(err))
-  }, [])
+    if (!isLoaded || products.length === 0) {
+      axios
+        .get("/api/get_products")
+        .then((res) => dispatch(setProductsList(res.data)))
+        .catch((err) => console.log(err))
+    }
+  }, [isLoaded, products.length, dispatch])
 
   const categories = ["ทั้งหมด", ...Array.from(new Set(products.map((p) => p.category).filter(Boolean)))]
 
@@ -74,8 +69,21 @@ const TrendingProducts = ({ searchQuery, filterType, setFilterType }: PropsType)
 
       {/* Product grid — responsive: 2 / 3 / 4 / 5 cols */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-        {filteredProducts.length > 0 ? (
-          filteredProducts.map((item: IProduct) => (
+        {!isLoaded ? (
+          Array.from({ length: 10 }).map((_, index) => (
+            <div
+              key={index}
+              className="bg-white rounded-xl shadow-card overflow-hidden p-4 space-y-3 animate-pulse border border-border-light"
+            >
+              <div className="aspect-square bg-gray-200 rounded-lg" />
+              <div className="h-3 bg-gray-200 rounded w-1/3" />
+              <div className="h-4 bg-gray-200 rounded w-3/4" />
+              <div className="h-5 bg-gray-200 rounded w-1/2 pt-1" />
+              <div className="h-8 bg-gray-100 rounded mt-2" />
+            </div>
+          ))
+        ) : filteredProducts.length > 0 ? (
+          filteredProducts.map((item: IProductItem) => (
             <ProductCard
               key={item.id}
               id={item.id}
@@ -83,6 +91,7 @@ const TrendingProducts = ({ searchQuery, filterType, setFilterType }: PropsType)
               title={item.name}
               price={item.price}
               discountPrice={item.discountPrice}
+              stock={item.stock}
               category={item.category || item.brand || "สินค้าทั่วไป"}
             />
           ))

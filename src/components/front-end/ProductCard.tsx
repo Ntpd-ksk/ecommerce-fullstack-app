@@ -15,6 +15,7 @@ interface propsType {
   title: string
   price: number
   discountPrice?: number
+  stock?: number
   warrantyTag?: string
 }
 
@@ -25,6 +26,7 @@ const ProductCard = ({
   title,
   price,
   discountPrice,
+  stock = 10,
   warrantyTag = "ประกัน 1 ปี",
 }: propsType) => {
   const dispatch = useAppDispatch()
@@ -37,6 +39,11 @@ const ProductCard = ({
     if (!session) {
       makeToast("กรุณาเข้าสู่ระบบก่อนเพิ่มสินค้าลงตะกร้า")
       dispatch(openAuthModal())
+      return
+    }
+
+    if (stock <= 0) {
+      makeToast("ขออภัย สินค้านี้หมดสต็อก")
       return
     }
 
@@ -65,6 +72,13 @@ const ProductCard = ({
             <span className="absolute top-3 left-3 bg-primary text-white text-xs font-semibold px-2.5 py-1 rounded-full">
               -{discountPercent}%
             </span>
+          )}
+          {stock <= 0 && (
+            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+              <span className="bg-red-600 text-white text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider shadow-md">
+                สินค้าหมด
+              </span>
+            </div>
           )}
         </div>
 
@@ -103,14 +117,20 @@ const ProductCard = ({
               {warrantyTag}
             </span>
 
-            <button
-              type="button"
-              aria-label="เพิ่มลงตะกร้า"
-              className="flex items-center justify-center w-9 h-9 rounded-lg bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors duration-200 cursor-pointer"
-              onClick={addProductToCart}
-            >
-              <AiOutlineShoppingCart size={16} />
-            </button>
+            {stock > 0 ? (
+              <button
+                type="button"
+                aria-label="เพิ่มลงตะกร้า"
+                className="flex items-center justify-center w-9 h-9 rounded-lg bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors duration-200 cursor-pointer"
+                onClick={addProductToCart}
+              >
+                <AiOutlineShoppingCart size={16} />
+              </button>
+            ) : (
+              <span className="text-[11px] font-semibold text-red-500 bg-red-50 px-2 py-0.5 rounded">
+                หมด
+              </span>
+            )}
           </div>
         </div>
       </div>

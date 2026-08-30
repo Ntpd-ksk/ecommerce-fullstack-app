@@ -60,6 +60,17 @@ const ProductRow = ({
                 <div className="text-xs text-gray-400 mt-0.5">{product.brand || '-'}</div>
             </td>
             <td className="px-6 py-4 font-bold text-gray-900">฿{Number(product.price).toLocaleString()}</td>
+            <td className="px-6 py-4 text-center">
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                    Number(product.stock) > 5
+                        ? "bg-green-100 text-green-800"
+                        : Number(product.stock) > 0
+                        ? "bg-yellow-100 text-yellow-800"
+                        : "bg-red-100 text-red-800"
+                }`}>
+                    {Number(product.stock) > 0 ? `${product.stock} ชิ้น` : "สินค้าหมด"}
+                </span>
+            </td>
             <td>
                 <div className="flex justify-center gap-2">
                     <button

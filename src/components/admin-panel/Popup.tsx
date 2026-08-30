@@ -25,6 +25,7 @@ const Popup = ({ setOpenPopup, setUpdateTable }: PropsType) => {
         category: productData.category || "",
         price: productData.price,
         discountPrice: productData.discountPrice || "",
+        stock: productData.stock !== undefined ? productData.stock : 0,
         description: productData.description || "",
     })
 
@@ -99,6 +100,7 @@ const Popup = ({ setOpenPopup, setUpdateTable }: PropsType) => {
             formData.append("category", inputData.category)
             formData.append("price", String(inputData.price))
             formData.append("discountPrice", String(inputData.discountPrice))
+            formData.append("stock", String(inputData.stock))
             formData.append("description", inputData.description)
             formData.append("specs", JSON.stringify(specsObj))
             formData.append("tags", JSON.stringify([]))
@@ -218,14 +220,27 @@ const Popup = ({ setOpenPopup, setUpdateTable }: PropsType) => {
                     </div>
                 </div>
 
-                <div className="flex flex-col gap-1">
-                    <label className="font-bold text-gray-700">ราคาโปรโมชั่น (ใส่เฉพาะที่ต้องการลดราคา)</label>
-                    <input
-                        className='border border-gray-300 outline-accent px-4 py-2 rounded-lg w-full bg-white'
-                        type="text"
-                        value={inputData.discountPrice}
-                        onChange={(e) => setInputData({ ...inputData, discountPrice: e.target.value })}
-                    />
+                <div className="grid grid-cols-2 gap-6">
+                    <div className="flex flex-col gap-1">
+                        <label className="font-bold text-gray-700">ราคาโปรโมชั่น (ใส่เฉพาะที่ต้องการลดราคา)</label>
+                        <input
+                            className='border border-gray-300 outline-accent px-4 py-2 rounded-lg w-full bg-white'
+                            type="text"
+                            value={inputData.discountPrice}
+                            onChange={(e) => setInputData({ ...inputData, discountPrice: e.target.value })}
+                        />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                        <label className="font-bold text-gray-700">จำนวนสินค้าคงเหลือ (สต็อก)</label>
+                        <input
+                            className='border border-gray-300 outline-accent px-4 py-2 rounded-lg w-full bg-white'
+                            type="number"
+                            min="0"
+                            value={inputData.stock}
+                            onChange={(e) => setInputData({ ...inputData, stock: parseInt(e.target.value) || 0 })}
+                            required
+                        />
+                    </div>
                 </div>
 
                 <div className="flex flex-col gap-1">

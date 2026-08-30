@@ -23,6 +23,7 @@ interface IProduct {
     price: string;
     discountPrice: string;
     category: string;
+    stock: number;
     warranty: string;
     tags: string | string[];
     specs: any;
@@ -65,7 +66,16 @@ const ProductDetail = () => {
             dispatch(openAuthModal());
             return;
         }
+        if (!product || product.stock <= 0) {
+            makeToast("ขออภัย สินค้านี้หมดสต็อก");
+            return;
+        }
         if (product && product.images.length > 0) {
+            const currentInCart = cartItem ? cartItem.quantity : 0;
+            if (currentInCart + quantity > product.stock) {
+                makeToast(`สต็อกไม่เพียงพอ (มีในคลัง ${product.stock} ชิ้น)`);
+                return;
+            }
             const payload = {
                 id: product.id,
                 img: product.images[0].url,
@@ -82,6 +92,14 @@ const ProductDetail = () => {
         if (!session) {
             makeToast("กรุณาเข้าสู่ระบบก่อนสั่งซื้อสินค้า");
             dispatch(openAuthModal());
+            return;
+        }
+        if (!product || product.stock <= 0) {
+            makeToast("ขออภัย สินค้านี้หมดสต็อก");
+            return;
+        }
+        if (quantity > product.stock) {
+            makeToast(`สต็อกไม่เพียงพอ (มีในคลัง ${product.stock} ชิ้น)`);
             return;
         }
         if (product && product.images.length > 0) {
@@ -175,7 +193,17 @@ const ProductDetail = () => {
                     {/* Right: Info */}
                     <div className="flex-1 flex flex-col gap-4">
                         <div className="flex items-center gap-2">
-                            <span className="bg-[#e6fffa] text-[#38b2ac] text-xs font-bold px-2 py-1 rounded">มีสินค้า</span>
+                            {product.stock > 0 ? (
+                                <span className="bg-[#e6fffa] text-[#38b2ac] text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+                                    <span className="w-2 h-2 rounded-full bg-[#38b2ac]"></span>
+                                    มีสินค้าในสต็อก ({product.stock} ชิ้น)
+                                </span>
+                            ) : (
+                                <span className="bg-red-50 text-red-500 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+                                    <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                                    สินค้าหมดชั่วคราว
+                                </span>
+                            )}
                         </div>
 
                         <h1 className="text-2xl font-bold text-[#333] leading-tight">
@@ -229,14 +257,19 @@ const ProductDetail = () => {
                             <div className="flex items-center border border-gray-300 rounded overflow-hidden">
                                 <button
                                     onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                                    className="px-4 py-2 bg-gray-50 hover:bg-gray-200 transition-colors"
+                                    disabled={product.stock <= 0}
+                                    className="px-4 py-2 bg-gray-50 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                 >-</button>
                                 <span className="px-6 py-2 font-bold">{quantity.toString().padStart(2, '0')}</span>
                                 <button
-                                    onClick={() => setQuantity(q => q + 1)}
-                                    className="px-4 py-2 bg-gray-50 hover:bg-gray-200 transition-colors"
+                                    onClick={() => setQuantity(q => (product.stock > q ? q + 1 : q))}
+                                    disabled={product.stock <= 0 || quantity >= product.stock}
+                                    className="px-4 py-2 bg-gray-50 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                 >+</button>
                             </div>
+                            <span className="text-sm text-gray-500">
+                                {product.stock > 0 ? `(คงเหลือ ${product.stock} ชิ้น)` : "(สินค้าหมด)"}
+                            </span>
                             {cartItem && (
                                 <span className="text-sm text-gray-500">
                                     (ในตะกร้า: {cartItem.quantity})
@@ -247,16 +280,26 @@ const ProductDetail = () => {
                         <div className="flex flex-col sm:flex-row gap-4 mt-8">
                             <button
                                 onClick={handleAddToCart}
-                                className="flex-1 flex items-center justify-center gap-2 border-2 border-accent text-accent font-bold py-3 rounded-md hover:bg-accent hover:text-white transition-all"
+                                disabled={product.stock <= 0}
+                                className={`flex-1 flex items-center justify-center gap-2 border-2 font-bold py-3 rounded-md transition-all ${
+                                    product.stock > 0
+                                        ? "border-accent text-accent hover:bg-accent hover:text-white cursor-pointer"
+                                        : "border-gray-300 text-gray-400 bg-gray-100 cursor-not-allowed"
+                                }`}
                             >
                                 <AiOutlineShoppingCart size={20} />
-                                เพิ่มในตะกร้า
+                                {product.stock > 0 ? "เพิ่มในตะกร้า" : "สินค้าหมด"}
                             </button>
                             <button
                                 onClick={handleBuyNow}
-                                className="flex-1 bg-accent text-white font-bold py-3 rounded-md hover:bg-[#d41a1a] transition-all"
+                                disabled={product.stock <= 0}
+                                className={`flex-1 font-bold py-3 rounded-md transition-all ${
+                                    product.stock > 0
+                                        ? "bg-accent text-white hover:bg-[#d41a1a] cursor-pointer"
+                                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                }`}
                             >
-                                ซื้อเลย
+                                {product.stock > 0 ? "ซื้อเลย" : "สินค้าหมด"}
                             </button>
                         </div>
                     </div>
