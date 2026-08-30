@@ -184,7 +184,7 @@ const Navbar = ({ setShowCart, setSearchQuery, scrollToProducts, setFilterType }
                                     </div>
 
                                     {session.user?.role === "ADMIN" && (
-                                        <Link href="/admin/dashboard" className="block px-4 py-2 text-sm text-purple-700 font-semibold hover:bg-purple-50" onClick={() => setIsDropdownOpen(false)}>Admin Dashboard</Link>
+                                        <Link href="/admin/dashboard-analytics" className="block px-4 py-2 text-sm text-purple-700 font-semibold hover:bg-purple-50" onClick={() => setIsDropdownOpen(false)}>Admin Dashboard</Link>
                                     )}
 
                                     <Link href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setIsDropdownOpen(false)}>บัญชีของฉัน</Link>

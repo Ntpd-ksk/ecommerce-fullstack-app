@@ -40,20 +40,6 @@ const Dashboard = () => {
     .finally(() => dispatch(setLoading(false)))
   }, [updateTable])
 
-  const handleRandomizeStock = async () => {
-    if (!confirm("ต้องการสุ่มเติมสต็อกสินค้า (และสุ่มให้หมด 5 รายการ) ใช่หรือไม่?")) return;
-    dispatch(setLoading(true))
-    try {
-      await axios.get("/api/admin/randomize-stock")
-      setUpdateTable((prev) => !prev)
-    } catch (err) {
-      console.error(err)
-      alert("เกิดข้อผิดพลาดในการสุ่มสต็อก")
-    } finally {
-      dispatch(setLoading(false))
-    }
-  }
-
   return <div className="space-y-6">
     <div className='bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden'>
       <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-white flex-wrap gap-4">
@@ -62,13 +48,6 @@ const Dashboard = () => {
           <p className="text-sm text-gray-500 mt-1">จัดการและแก้ไขข้อมูลสินค้าของคุณ</p>
         </div>
         <div className="flex items-center gap-3">
-          <button
-            onClick={handleRandomizeStock}
-            className="bg-gray-100 text-gray-700 hover:bg-gray-200 px-4 py-2.5 rounded-xl font-medium text-sm transition-all flex items-center gap-2 border border-gray-200"
-            title="สุ่มสต็อกสินค้าทุกชิ้น (10-50 ชิ้น) และเหลือสินค้าหมด 5 ชิ้น"
-          >
-            🎲 สุ่ม/เติมสต็อก (หมด 5 ชิ้น)
-          </button>
           <button
             onClick={() => router.push('/admin/products')}
             className="bg-[#ef4444] text-white px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-red-600 transition-all shadow-lg shadow-red-600/20 flex items-center gap-2"
