@@ -170,7 +170,7 @@ export async function GET() {
           total: orderTotal,
           status: randomStatus,
           paymentMethod: Math.random() > 0.3 ? "promptpay" : "bank",
-          paymentSlip: randomStatus !== "PENDING" ? "/slips/sample-slip.jpg" : null,
+          paymentSlip: randomStatus !== "PENDING" ? "/sample-slip.svg" : null,
           trackingNumber: ["SHIPPING", "SUCCESS"].includes(randomStatus) ? `TH${Math.floor(100000000 + Math.random() * 900000000)}` : null,
           createdAt: orderDate,
           updatedAt: orderDate,

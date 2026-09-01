@@ -170,6 +170,9 @@ const OrderManagementPage = () => {
                           <img
                             src={order.paymentSlip}
                             alt="slip"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = '/sample-slip.svg'
+                            }}
                             className="h-14 w-10 object-cover rounded-md border border-gray-200 shadow-sm transition-all group-hover:scale-105 group-hover:shadow-md"
                           />
                           <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 flex items-center justify-center rounded-md transition-opacity">
@@ -242,7 +245,14 @@ const OrderManagementPage = () => {
               </button>
             </div>
             <div className="p-6 bg-gray-50 flex justify-center border-b border-gray-100">
-              <img src={selectedSlip} alt="Full slip" className="max-h-[60vh] rounded-lg shadow-lg border border-white" />
+              <img
+                src={selectedSlip}
+                alt="Full slip"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = '/sample-slip.svg'
+                }}
+                className="max-h-[60vh] rounded-lg shadow-lg border border-white"
+              />
             </div>
             <div className="p-4 flex gap-3">
               <button
