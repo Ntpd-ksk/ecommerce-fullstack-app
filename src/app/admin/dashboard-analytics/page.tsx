@@ -681,7 +681,7 @@ export default function DashboardAnalytics() {
                   <div key={p.id} className="py-2.5 flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0">
                       <img
-                        src={p.images?.[0]?.url || "/placeholder.jpg"}
+                        src={encodeURI(p.images?.[0]?.url || "/placeholder.jpg")}
                         alt={p.name}
                         onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.jpg"; }}
                         className="w-10 h-10 object-cover rounded-xl border border-gray-100 shrink-0"
@@ -745,7 +745,7 @@ export default function DashboardAnalytics() {
                       {idx + 1}
                     </span>
                     <img
-                      src={p.image || "/placeholder.jpg"}
+                      src={encodeURI(p.image || "/placeholder.jpg")}
                       alt={p.name}
                       onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.jpg"; }}
                       className="w-10 h-10 object-cover rounded-xl border border-gray-100 shrink-0"

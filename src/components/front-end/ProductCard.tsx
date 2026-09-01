@@ -64,8 +64,9 @@ const ProductCard = ({
         <div className="relative aspect-square bg-surface-muted p-4 flex items-center justify-center overflow-hidden">
           <img
             className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 ease-out-expo"
-            src={img}
+            src={encodeURI(img)}
             alt={title}
+            onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.jpg"; }}
             loading="lazy"
           />
           {discountPercent > 0 && (
