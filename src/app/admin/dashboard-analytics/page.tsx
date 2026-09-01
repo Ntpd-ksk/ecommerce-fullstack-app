@@ -683,6 +683,7 @@ export default function DashboardAnalytics() {
                       <img
                         src={p.images?.[0]?.url || "/placeholder.jpg"}
                         alt={p.name}
+                        onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.jpg"; }}
                         className="w-10 h-10 object-cover rounded-xl border border-gray-100 shrink-0"
                       />
                       <div className="min-w-0">
@@ -744,8 +745,9 @@ export default function DashboardAnalytics() {
                       {idx + 1}
                     </span>
                     <img
-                      src={p.image}
+                      src={p.image || "/placeholder.jpg"}
                       alt={p.name}
+                      onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.jpg"; }}
                       className="w-10 h-10 object-cover rounded-xl border border-gray-100 shrink-0"
                     />
                     <div className="min-w-0">
