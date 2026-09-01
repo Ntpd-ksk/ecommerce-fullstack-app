@@ -86,14 +86,13 @@ export async function POST(req: Request) {
         data: {
           userId: (session.user as any).id,
           total: calculatedTotal,
-          address: address || "",
           paymentMethod: paymentMethod || "bank",
           paymentSlip: null,
           status: paymentMethod === "cod" ? "PROCESSING" : "PENDING",
           items: {
             create: orderItemsData
           }
-        } as any,
+        },
         include: {
           items: true
         }

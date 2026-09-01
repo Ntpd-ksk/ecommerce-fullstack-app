@@ -31,11 +31,13 @@ export async function POST(
       return NextResponse.json({ message: "Order not found" }, { status: 404 });
     }
 
-    // Use raw query to bypass potential Prisma Client type mismatch
-    await prisma.$executeRaw`UPDATE \`Order\` SET paymentSlip = ${paymentSlip}, status = 'VERIFYING', updatedAt = NOW() WHERE id = ${params.orderId}`;
-
-    const updated = await prisma.order.findFirst({
-      where: { id: params.orderId } as any,
+    // Update order with payment slip and change status to VERIFYING
+    const updated = await prisma.order.update({
+      where: { id: params.orderId },
+      data: {
+        paymentSlip: paymentSlip,
+        status: "VERIFYING",
+      }
     });
 
     return NextResponse.json({ order: updated });

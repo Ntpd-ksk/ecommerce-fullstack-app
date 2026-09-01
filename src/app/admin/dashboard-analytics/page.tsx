@@ -234,7 +234,6 @@ export default function DashboardAnalytics() {
               { id: "today", label: "วันนี้" },
               { id: "7days", label: "7 วันล่าสุด" },
               { id: "30days", label: "30 วันล่าสุด" },
-              { id: "month", label: "เดือนนี้" },
               { id: "all", label: "ทั้งหมด" },
               { id: "custom", label: "กำหนดเอง" },
             ].map((p) => (

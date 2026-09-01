@@ -6,6 +6,7 @@ import { AiOutlineShoppingCart, AiOutlineUser } from 'react-icons/ai'
 import { BsSearch } from 'react-icons/bs'
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 import CategoryMenu from './CategoryMenu';
 import { openAuthModal, closeAuthModal } from "@/redux/features/authModalSlice";
@@ -19,6 +20,7 @@ interface PropsType {
 
 const Navbar = ({ setShowCart, setSearchQuery, scrollToProducts, setFilterType }: PropsType) => {
     const dispatch = useAppDispatch();
+    const router = useRouter();
     const { data: session } = useSession();
     const cartCount = useAppSelector((state) => state.cartReducer.length)
     const wishlistCount = useAppSelector((state) => state.wishlistReducer.length)
@@ -97,7 +99,11 @@ const Navbar = ({ setShowCart, setSearchQuery, scrollToProducts, setFilterType }
         if (!session) {
             dispatch(openAuthModal());
         } else {
-            setShowCart && setShowCart(prev => !prev);
+            if (setShowCart) {
+                setShowCart(prev => !prev);
+            } else {
+                router.push("/cart");
+            }
         }
     };
 
