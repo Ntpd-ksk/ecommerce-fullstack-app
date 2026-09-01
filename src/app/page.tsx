@@ -40,7 +40,7 @@ const Home = () => {
     }
   }
 
-  return <main>
+  return <main className="min-h-screen flex flex-col justify-between">
     {/* ส่ง setShowCart เป็น props เพื่อให้ Navbar Component สามารถเปลี่ยนแปลงค่า showCart ได้ */}
     <Navbar setShowCart={setShowCart} setSearchQuery={setSearchQuery} scrollToProducts={scrollToProducts} setFilterType={setFilterType} />
     {/* ใช้ตัวแปร showCart เพื่อตรวจสอบว่าตะกร้าสินค้าควรถูกแสดงหรือไม่ ถ้า showCart เป็น true จะแสดง Component Cart */}

@@ -24,7 +24,7 @@ const TrendingProducts = ({ searchQuery, filterType, setFilterType }: PropsType)
     }
   }, [isLoaded, products.length, dispatch])
 
-  const categories = ["ทั้งหมด", ...Array.from(new Set(products.map((p) => p.category).filter(Boolean)))]
+  const categories: string[] = ["ทั้งหมด", ...Array.from(new Set(products.map((p) => p.category).filter((c): c is string => Boolean(c))))]
 
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase())

@@ -339,11 +339,11 @@ function ProfileContent() {
   if (!session) return null;
 
   return (
-    <main>
+    <main className="min-h-screen flex flex-col bg-[#EBEDF6]">
       <Navbar setShowCart={setShowCart} />
       {showCart && <Cart setShowCart={setShowCart} />}
 
-      <div className="bg-[#EBEDF6] min-h-screen py-8">
+      <div className="flex-1 py-8">
         <div className="container flex flex-col md:flex-row gap-8">
           {/* Sidebar */}
           <div className="w-full md:w-1/4 space-y-4">

@@ -5,7 +5,7 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 const initialState: IProduct = {
     id: "",
-    imagePath: "",
+    images: [],
     name: "",
     brand: "",
     sku: "",

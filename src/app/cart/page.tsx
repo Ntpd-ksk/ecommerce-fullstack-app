@@ -7,7 +7,7 @@ import { AiOutlineArrowLeft, AiOutlineDelete, AiOutlineMinus, AiOutlinePlus, AiO
 import Navbar from "@/components/front-end/Navbar";
 import Footer from "@/components/front-end/Footer";
 import { useAppSelector, useAppDispatch } from "@/redux/hook";
-import { removeFromCart, updateQuantity } from "@/redux/features/cartSlice";
+import { removeFromCart, updateQuantity, clearCart } from "@/redux/features/cartSlice";
 import Link from "next/link";
 
 export default function CartPage() {
@@ -23,16 +23,16 @@ export default function CartPage() {
 
     if (products.length === 0) {
         return (
-            <main className="bg-[#f5f7f9] min-h-screen">
+            <main className="bg-[#f5f7f9] min-h-screen flex flex-col">
                 <Navbar />
-                <div className="container mx-auto px-4 py-20 text-center">
-                    <div className="bg-white p-12 rounded-2xl shadow-sm inline-block">
+                <div className="container mx-auto px-4 py-20 text-center flex-1 flex items-center justify-center">
+                    <div className="bg-white p-12 rounded-2xl shadow-sm inline-block max-w-md w-full">
                         <AiOutlineShoppingCart size={80} className="mx-auto text-gray-200 mb-6" />
-                        <h2 className="text-2xl font-bold mb-4">ตะกร้าของคุณว่างเปล่า</h2>
-                        <p className="text-gray-500 mb-8">ไปเลือกช้อปสินค้าที่น่าสนใจกันเถอะ</p>
+                        <h2 className="text-2xl font-bold mb-4 text-gray-800">ตะกร้าของคุณว่างเปล่า</h2>
+                        <p className="text-gray-500 mb-8">ยังไม่มีสินค้าในตะกร้า ไปเลือกช้อปอุปกรณ์ฮาร์ดแวร์กันเถอะ</p>
                         <button
                             onClick={() => router.push("/")}
-                            className="bg-accent text-white px-8 py-3 rounded-xl font-bold hover:bg-[#d41a1a] transition-all"
+                            className="w-full bg-accent text-white px-8 py-3.5 rounded-xl font-bold hover:bg-[#d41a1a] transition-all shadow-md shadow-accent/20"
                         >
                             ไปเลือกซื้อสินค้า
                         </button>
@@ -44,75 +44,108 @@ export default function CartPage() {
     }
 
     return (
-        <main className="bg-[#f5f7f9] min-h-screen">
+        <main className="bg-[#f5f7f9] min-h-screen flex flex-col">
             <Navbar />
 
-            <div className="container mx-auto px-4 py-8">
-                <div className="flex items-center justify-between mb-8">
+            <div className="container mx-auto px-4 py-8 flex-1">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
                     <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-3">
                         <AiOutlineShoppingCart className="text-accent" />
-                        ตะกร้าสินค้า ({products.length})
+                        ตะกร้าสินค้า ({products.length} รายการ)
                     </h1>
-                    <button onClick={() => router.push("/")} className="text-gray-600 hover:text-accent flex items-center gap-2 font-medium">
-                        <AiOutlineArrowLeft /> เลือกซื้อสินค้าเพิ่ม
-                    </button>
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={() => {
+                                if (window.confirm("คุณต้องการลบสินค้าทั้งหมดออกจากตะกร้าใช่หรือไม่?")) {
+                                    dispatch(clearCart());
+                                }
+                            }}
+                            className="text-red-500 hover:text-red-700 hover:bg-red-50 px-3.5 py-2 rounded-xl text-sm font-semibold flex items-center gap-1.5 transition-colors border border-red-200"
+                        >
+                            <AiOutlineDelete size={16} /> ล้างตะกร้าทั้งหมด
+                        </button>
+                        <button onClick={() => router.push("/")} className="text-gray-600 hover:text-accent flex items-center gap-2 font-medium text-sm">
+                            <AiOutlineArrowLeft /> เลือกซื้อสินค้าเพิ่ม
+                        </button>
+                    </div>
                 </div>
 
                 <div className="flex flex-col lg:flex-row gap-8">
                     {/* Items List */}
                     <div className="flex-[2] space-y-4">
                         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                            <div className="hidden md:grid grid-cols-5 gap-4 p-6 bg-gray-50 border-b text-sm font-bold text-gray-500 uppercase tracking-wider">
-                                <div className="col-span-2">สินค้า</div>
-                                <div className="text-center">ราคา</div>
-                                <div className="text-center">จำนวน</div>
-                                <div className="text-right">ราคารวม</div>
+                            <div className="hidden md:grid grid-cols-12 gap-4 p-6 bg-gray-50 border-b text-sm font-bold text-gray-500 uppercase tracking-wider">
+                                <div className="col-span-5">สินค้า</div>
+                                <div className="col-span-2 text-center">ราคา</div>
+                                <div className="col-span-2 text-center">จำนวน</div>
+                                <div className="col-span-2 text-right">ราคารวม</div>
+                                <div className="col-span-1 text-center">ลบ</div>
                             </div>
 
-                            <div className="divide-y">
+                            <div className="divide-y divide-gray-100">
                                 {products.map((item) => (
-                                    <div key={item.id} className="p-6 grid grid-cols-1 md:grid-cols-5 gap-4 items-center group">
-                                        <div className="col-span-2 flex gap-4 items-center">
-                                            <div className="w-20 h-20 bg-gray-50 rounded-xl border flex-shrink-0 p-2">
+                                    <div key={item.id} className="p-6 grid grid-cols-1 md:grid-cols-12 gap-4 items-center group hover:bg-gray-50/50 transition-colors">
+                                        {/* Product Info */}
+                                        <div className="md:col-span-5 flex gap-4 items-center">
+                                            <div className="w-20 h-20 bg-gray-50 rounded-xl border flex-shrink-0 p-2 flex items-center justify-center">
                                                 <img src={item.img} alt={item.title} className="w-full h-full object-contain" />
                                             </div>
-                                            <div className="min-w-0">
-                                                <h3 className="font-bold text-gray-800 truncate hover:text-accent transition-colors cursor-pointer" onClick={() => router.push(`/product/${item.id}`)}>{item.title}</h3>
-                                                <button
-                                                    onClick={() => dispatch(removeFromCart(item.id))}
-                                                    className="text-xs text-red-400 hover:text-red-600 flex items-center gap-1 mt-2 transition-colors"
-                                                >
-                                                    <AiOutlineDelete /> นำออก
-                                                </button>
+                                            <div className="min-w-0 flex-1">
+                                                <h3 className="font-bold text-gray-800 line-clamp-2 hover:text-accent transition-colors cursor-pointer text-sm md:text-base" onClick={() => router.push(`/product/${item.id}`)}>{item.title}</h3>
                                             </div>
                                         </div>
 
-                                        <div className="text-center font-medium text-gray-600">
+                                        {/* Price */}
+                                        <div className="md:col-span-2 text-left md:text-center font-medium text-gray-600">
                                             <span className="md:hidden text-xs text-gray-400 block mb-1">ราคา:</span>
                                             ฿{item.price.toLocaleString()}
                                         </div>
 
-                                        <div className="flex justify-center">
+                                        {/* Quantity */}
+                                        <div className="md:col-span-2 flex justify-start md:justify-center">
                                             <div className="flex items-center border-2 border-gray-100 rounded-xl overflow-hidden bg-gray-50">
                                                 <button
-                                                    onClick={() => item.quantity > 1 && dispatch(updateQuantity({ id: item.id, quantity: item.quantity - 1 }))}
-                                                    className="p-2 hover:bg-gray-200 transition-colors text-gray-500"
+                                                    onClick={() => {
+                                                        if (item.quantity > 1) {
+                                                            dispatch(updateQuantity({ id: item.id, quantity: item.quantity - 1 }));
+                                                        } else {
+                                                            if (window.confirm(`คุณต้องการลบ ${item.title} ออกจากตะกร้าใช่หรือไม่?`)) {
+                                                                dispatch(removeFromCart(item.id));
+                                                            }
+                                                        }
+                                                    }}
+                                                    className="p-2 hover:bg-gray-200 transition-colors text-gray-500 hover:text-red-500"
+                                                    title={item.quantity === 1 ? "ลบสินค้า" : "ลดจำนวน"}
                                                 >
-                                                    <AiOutlineMinus size={14} />
+                                                    {item.quantity === 1 ? <AiOutlineDelete size={14} className="text-red-500" /> : <AiOutlineMinus size={14} />}
                                                 </button>
-                                                <span className="w-10 text-center font-bold text-gray-800">{item.quantity}</span>
+                                                <span className="w-10 text-center font-bold text-gray-800 text-sm">{item.quantity}</span>
                                                 <button
                                                     onClick={() => dispatch(updateQuantity({ id: item.id, quantity: item.quantity + 1 }))}
-                                                    className="p-2 hover:bg-gray-200 transition-colors text-gray-500"
+                                                    className="p-2 hover:bg-gray-200 transition-colors text-gray-500 hover:text-accent"
+                                                    title="เพิ่มจำนวน"
                                                 >
                                                     <AiOutlinePlus size={14} />
                                                 </button>
                                             </div>
                                         </div>
 
-                                        <div className="text-right font-bold text-accent text-lg">
+                                        {/* Line Total */}
+                                        <div className="md:col-span-2 text-left md:text-right font-bold text-accent text-base md:text-lg">
                                             <span className="md:hidden text-xs text-gray-400 block mb-1">รวม:</span>
                                             ฿{(item.price * item.quantity).toLocaleString()}
+                                        </div>
+
+                                        {/* Delete Button */}
+                                        <div className="md:col-span-1 flex justify-end md:justify-center">
+                                            <button
+                                                onClick={() => dispatch(removeFromCart(item.id))}
+                                                className="p-2.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all flex items-center gap-1.5 text-xs font-semibold"
+                                                title="ลบสินค้านี้ออกจากตะกร้า"
+                                            >
+                                                <AiOutlineDelete size={18} />
+                                                <span className="md:hidden">ลบสินค้านี้</span>
+                                            </button>
                                         </div>
                                     </div>
                                 ))}

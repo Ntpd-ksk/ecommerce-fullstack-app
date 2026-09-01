@@ -39,11 +39,15 @@ updateQuantity: (state, action: PayloadAction<{ id: string; quantity: number }>)
             ? { ...item, quantity: action.payload.quantity }
             : item
     })
+},
+
+clearCart: () => {
+    return []
 }
 
     }
 })
 
 
-export const { addToCart, removeFromCart, updateQuantity } = cartSlice.actions
+export const { addToCart, removeFromCart, updateQuantity, clearCart } = cartSlice.actions
 export default cartSlice.reducer

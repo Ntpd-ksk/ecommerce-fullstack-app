@@ -33,9 +33,13 @@ interface CartItem {
 export default function CheckoutPage() {
     return (
         <Suspense fallback={<div className="min-h-screen flex items-center justify-center">กำลังโหลด...</div>}>
-            <Navbar />
-            <CheckoutContent />
-            <Footer />
+            <div className="min-h-screen flex flex-col bg-[#f5f7f9]">
+                <Navbar />
+                <div className="flex-1">
+                    <CheckoutContent />
+                </div>
+                <Footer />
+            </div>
         </Suspense>
     );
 }

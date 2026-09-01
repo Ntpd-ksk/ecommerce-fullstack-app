@@ -151,11 +151,11 @@ const ProductDetail = () => {
     const specsObj = typeof product.specs === 'string' ? JSON.parse(product.specs) : product.specs;
 
     return (
-        <main>
+        <main className="min-h-screen flex flex-col bg-[#f5f7f9]">
             <Navbar setShowCart={setShowCart} />
             {showCart && <Cart setShowCart={setShowCart} />}
 
-            <div className="container mx-auto px-4 py-8">
+            <div className="container mx-auto px-4 py-8 flex-1">
                 {/* Product Section */}
                 <div className="flex flex-col lg:flex-row gap-8 bg-white p-6 rounded-lg shadow-sm">
 

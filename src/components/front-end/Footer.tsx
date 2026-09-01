@@ -1,10 +1,8 @@
-// Component Footer เป็นส่วนท้ายของหน้าเว็บที่แสดงข้อความลิขสิทธิ์และชื่อเว็บไซต์
-
 const Footer = () => {
     return (
-        <div className="bg-accent text-white p-4 text-center mt-16">
+        <footer className="bg-accent text-white p-4 text-center mt-auto w-full">
             &copy; Copyright | All Right Reserved <br /> Natapod Shop
-        </div>
+        </footer>
     )
 }
 
