@@ -65,9 +65,9 @@ const Banner = () => {
   }
 
   return (
-    <div className="container mt-32 relative group">
+    <section className="container my-12 md:my-16 relative group">
       <div
-        className={`h-[540px] md:h-[720px] bg-cover rounded-xl pr-[15px] transition-all duration-700 ease-in-out cursor-grab active:cursor-grabbing`}
+        className={`h-[420px] md:h-[600px] bg-cover rounded-3xl transition-all duration-700 ease-in-out cursor-grab active:cursor-grabbing shadow-lg border border-gray-100/50 overflow-hidden relative`}
         style={{
           backgroundImage: `url(${slides[current].image})`,
           backgroundPosition: slides[current].position === "bg-right" ? "right center" : "center",
@@ -76,22 +76,23 @@ const Banner = () => {
         onMouseUp={onMouseUp}
         onMouseLeave={() => setDragStart(null)}
       >
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
       </div>
 
       {/* Dots Indicator */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3 z-10">
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2.5 z-10 bg-black/30 backdrop-blur-md px-4 py-2 rounded-full border border-white/10">
         {slides.map((_, index) => (
           <button
             key={index}
             onClick={() => handleDotClick(index)}
-            className={`w-3 h-3 rounded-full transition-all duration-300 ${
-              index === current ? "bg-white w-6" : "bg-white/50 hover:bg-white/80"
+            className={`h-2.5 rounded-full transition-all duration-300 ${
+              index === current ? "bg-white w-8 shadow-sm" : "bg-white/40 hover:bg-white/70 w-2.5"
             }`}
             aria-label={`Go to slide ${index + 1}`}
           />
         ))}
       </div>
-    </div>
+    </section>
   )
 }
 
